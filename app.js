@@ -75,7 +75,8 @@ app.use(session({
 
 
 
-
+app.use(passport.initialize());
+app.use(passport.session());
 
 // configure passport & sessions(before use routes)
 passport.use(User.createStrategy())
