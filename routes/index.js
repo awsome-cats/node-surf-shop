@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
-const { postRegister } = require('../controllers/index.js')
+const { postRegister, postLogin, getLogout } = require('../controllers')
+const { errorHandler } = require('../middleware')
 
 /* GET home page. */
 router.get('/', (req, res, next) => {
@@ -9,21 +10,24 @@ router.get('/', (req, res, next) => {
 
 /* GET /register. */
 router.get('/register', (req, res) => {
-  res.send('GET /register')
+  res.send('GET /register function')
 })
 
 /* POST /register. */
- router.post('/register', postRegister);
+ router.post('/register', errorHandler(postRegister));
 
-/* GET /register. */
+ /* GET /register. */
 router.get('/login', (req, res,) => {
   res.send('GET /login');
 });
 
 /* GET /register. */
-router.post('/login', (req, res,) => {
-  res.send('POST /login');
-});
+router.post('/login',postLogin);
+
+/* GET /logout */
+router.get('/logout',getLogout)
+
+
 
 
 router.get('/profile', (req, res) => {
