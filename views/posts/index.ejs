@@ -7,5 +7,14 @@
 </head>
 <body>
     <h1>Posts Index !</h1>
+    <% posts.forEach(function(post) {%>
+    <div>
+        <h2>タイトル:<p><%= post.title %></p></h2>
+        <p>金額: <%= post.price%></p>
+        <p>内容: <%= post.description%></p>
+        <p>場所: <%= post.location%></p>
+        <a href="/posts/<%= post.id %>">詳細</a>
+    </div>
+    <%}); %>
 </body>
 </html>

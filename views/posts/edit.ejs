@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        <h1>投稿の編集</h1>
+        <form action="/posts/<%= post.id%>?_method=PUT" method="POST">
+            <div><input type="text" name="post[title]" placeholder="タイトル" value="<%=post.title  %>"></div>
+            <div><input type="text" name="post[price]" placeholder="金額" value="<%=post.price  %>"></div>
+            <div><input type="text" name="post[description]" placeholder="内容" value="<%=post.description  %>"></div>
+            <div><input type="text" name="post[location]" placeholder="Location" value="<%=post.location  %>"></div>
+            <input type="submit">
+        </form>
+    </div>
+</body>
+</html>

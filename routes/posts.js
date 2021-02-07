@@ -1,40 +1,67 @@
 const express = require('express')
 const router = express.Router()
-const { errorHandler } = require('../middleware')
-const { getPosts } = require('../controllers/posts')
+const { asyncErrorHandler } = require('../middleware')
+const {
+    postIndex,
+    postNew,
+    postCreate,
+    postEdit,
+    postShow,
+    postUpdate,
+    postDestroy
+} = require('../controllers/posts')
 
-/** GET posts index /posts */
-router.get('/',errorHandler(getPosts))
 
-// Get new        /posts/new
-router.get('/new', (req, res) => {
-    res.send('/posts/new')
-})
 
-// 3 Post create    /posts
-router.post('/', (req, res) => {
-    res.send('create /posts')
-})
+/** GET posts 
+ *一覧表示
+ Get
+ 3000/posts
+ *
+*/
+router.get('/',asyncErrorHandler(postIndex))
 
-// Get show       /posts/:id
-router.get('/:id', (req, res) => {
-    res.send('show /posts/:id')
-})
+/**
+ *  Get new
+ * 新規投稿
+ * 3000/posts/new
+ */
+router.get('/new', postNew)
 
-// Get edit       /posts/:id/edit
-router.get('/:id/edit', (req, res) => {
-    res.send('Edit /posts/:id/edit')
-})
+/*Post create
+*新規投稿
+*3000/posts
+*redirect(`/posts/${post.id}`)
+*/
+router.post('/', asyncErrorHandler(postCreate))
 
-// PUT update     /posts/:id
-router.put('/:id', (req, res) => {
-    res.send('update /posts/:id')
-})
+/**
+ * Get show
+ * それぞれの投稿 PAGE
+ * 3000/posts/:id
+ */
+router.get('/:id', asyncErrorHandler(postShow))
 
-// DELETE destroy /posts/:id
-router.delete('/:id', (req, res) => {
-    res.send('delete /posts/:id')
-})
+/**
+ * Get edit
+ * formに投稿したデータを表示
+ * 3000/posts/:id/edit
+ */
+router.get('/:id/edit',asyncErrorHandler(postEdit))
+
+/**
+ *  PUT update
+ * formに投稿したデータの更新
+ * 3000/posts/:id
+ */
+router.put('/:id',asyncErrorHandler(postUpdate))
+
+/**
+ *  DELETE destroy
+ * デリート
+ * 3000/posts/:id
+ */
+router.delete('/:id', asyncErrorHandler(postDestroy))
 
 
 module.exports = router;
