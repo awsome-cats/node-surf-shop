@@ -11,7 +11,15 @@
         <form action="/posts/<%= post.id%>?_method=PUT" method="POST">
             <div><input type="text" name="post[title]" placeholder="タイトル" value="<%=post.title  %>"></div>
             <div><input type="text" name="post[price]" placeholder="金額" value="<%=post.price  %>"></div>
-            <div><input type="text" name="post[description]" placeholder="内容" value="<%=post.description  %>"></div>
+            <div>
+                <input type="file" accept="images/*" name="images" multiple />
+                <div>
+                    <% post.images.forEach(function(image) { %>
+                        <img src="<%= image.url %>" width="100px">
+                    <% }); %>
+                </div>
+            </div>
+            <div><textarea name="post[description]" placeholder="内容" ><%=post.description  %></textarea></div>
             <div><input type="text" name="post[location]" placeholder="Location" value="<%=post.location  %>"></div>
             <input type="submit">
         </form>
