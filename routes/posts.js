@@ -1,5 +1,11 @@
 const express = require('express')
 const router = express.Router()
+/**
+ * multerオブジェクトで作成されたuploadsディレクトリは
+ * uploadされる前に一時的に保存される場所
+ */
+const multer = require('multer')
+const upload = multer({'dest': 'uploads/'});
 const { asyncErrorHandler } = require('../middleware')
 const {
     postIndex,
@@ -32,8 +38,10 @@ router.get('/new', postNew)
 *新規投稿
 *3000/posts
 *redirect(`/posts/${post.id}`)
+upload: imagesとはformからしゅとくする入力の名前
+4: 画像の最大数を表す
 */
-router.post('/', asyncErrorHandler(postCreate))
+router.post('/', upload.array('images', 4),asyncErrorHandler(postCreate))
 
 /**
  * Get show

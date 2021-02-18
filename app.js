@@ -1,3 +1,4 @@
+require('dotenv').config()
 const createError   = require('http-errors');
 const express       = require('express');
 const path          = require('path');
@@ -35,7 +36,7 @@ const  app = express();
  */
 mongoose.connect('mongodb://localhost:27017/surf-shop', {
   useNewUrlParser: true
-}, () => console.log('connect to DB!!'))
+}, () => console.log('DBに接続されました'))
 
 
 const db = mongoose.connection;

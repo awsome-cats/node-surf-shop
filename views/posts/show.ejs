@@ -12,6 +12,12 @@
             <p>金額: <%= post.price%></p>
             <p>内容: <%= post.description%></p>
             <p>場所: <%= post.location%></p>
+            <div>
+                <% post.images.forEach(function(image){ %>
+                    <img src="<%= image.url %>" alt="プログラミング画像" width="200px
+                    ">
+                <% }); %>
+            </div>
             <a href="/posts/<%= post.id %>/edit">
             <button>編集する</button></a>
         </div>
