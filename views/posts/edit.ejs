@@ -8,14 +8,22 @@
 <body>
     <div>
         <h1>投稿の編集</h1>
-        <form action="/posts/<%= post.id%>?_method=PUT" method="POST">
+        <form action="/posts/<%= post.id%>?_method=PUT" method="POST" id="postEditForm">
             <div><input type="text" name="post[title]" placeholder="タイトル" value="<%=post.title  %>"></div>
             <div><input type="text" name="post[price]" placeholder="金額" value="<%=post.price  %>"></div>
             <div>
-                <input type="file" accept="images/*" name="images" multiple />
+                <!-- 送信するときの画像選択 -->
+                <input type="file" id="imageUpload" accept="images/*" name="images" multiple />
+                <!--
+                    送信された画像表示
+                    post.imagesをforEachすることでそれぞれを出力
+                    その間にimagesが持つimage.urlやi(index), public_id等を出力
+                -->
                 <div>
-                    <% post.images.forEach(function(image) { %>
+                    <% post.images.forEach(function(image, i) { %>
                         <img src="<%= image.url %>" width="100px">
+                        <label for="image<%= i %>">削除?</label>
+                        <input type="checkbox" name="deleteImage" class="imageDeleteCheckbox" id="image<%= i %>" value="<%= image.public_id %>">
                     <% }); %>
                 </div>
             </div>
@@ -23,6 +31,29 @@
             <div><input type="text" name="post[location]" placeholder="Location" value="<%=post.location  %>"></div>
             <input type="submit">
         </form>
+
+        <script>
+            // formTagのidを取得
+            let postEditForm = document.getElementById('postEditForm');
+            postEditForm.addEventListener('submit', function(event){
+                // ファイル選択数
+            let imageUploads = document.getElementById('imageUpload').files.length;
+            // エディット対象画像数
+            let existingImages = document.querySelectorAll('.imageDeleteCheckbox').length;
+            // 削除する際のチェックされた画像数
+            let imgDeletions= document.querySelectorAll('.imageDeleteCheckbox:checked').length;
+            let newTotal = existingImages - imgDeletions + imageUploads
+            if ( newTotal > 4) {
+                event.preventDefault()
+                alert(`少なくとも${newTotal -4}枚の画像を削除する必要があります`)
+            }
+            })
+
+
+
+
+
+        </script>
     </div>
 </body>
 </html>

@@ -63,6 +63,14 @@ module.exports = {
 
     // Update post
     // new:trueをわたす必要
+    /**
+     * 
+     * @param {*} req
+     * @param {*} res
+     * @param {*} next
+     *  存在する 画像の削除を扱う
+     * 新規投稿の画像を扱う
+     */
     async postUpdate(req, res, next) {
        let post = await Post.findByIdAndUpdate(req.params.id, req.body.post,{new:true})
        res.redirect(`/posts/${post.id}`)
