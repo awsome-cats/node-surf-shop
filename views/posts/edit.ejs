@@ -42,6 +42,7 @@
             let existingImages = document.querySelectorAll('.imageDeleteCheckbox').length;
             // 削除する際のチェックされた画像数
             let imgDeletions= document.querySelectorAll('.imageDeleteCheckbox:checked').length;
+            // 一回の最大投稿数
             let newTotal = existingImages - imgDeletions + imageUploads
             if ( newTotal > 4) {
                 event.preventDefault()
