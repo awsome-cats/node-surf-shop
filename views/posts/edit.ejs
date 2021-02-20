@@ -7,8 +7,15 @@
 </head>
 <body>
     <div>
+        <!--
+            NOTE
+            file送信を含むForm場合
+            enctype="multipart/form-data"
+            複数のfileDeletionの場合
+            inputのnameをname="deleteImages[]"のように配列にする
+        -->
         <h1>投稿の編集</h1>
-        <form action="/posts/<%= post.id%>?_method=PUT" method="POST" id="postEditForm">
+        <form action="/posts/<%= post.id%>?_method=PUT" method="POST" id="postEditForm" enctype="multipart/form-data">
             <div><input type="text" name="post[title]" placeholder="タイトル" value="<%=post.title  %>"></div>
             <div><input type="text" name="post[price]" placeholder="金額" value="<%=post.price  %>"></div>
             <div>
@@ -23,7 +30,7 @@
                     <% post.images.forEach(function(image, i) { %>
                         <img src="<%= image.url %>" width="100px">
                         <label for="image<%= i %>">削除?</label>
-                        <input type="checkbox" name="deleteImage" class="imageDeleteCheckbox" id="image<%= i %>" value="<%= image.public_id %>">
+                        <input type="checkbox" name="deleteImages[]" class="imageDeleteCheckbox" id="image<%= i %>" value="<%= image.public_id %>">
                     <% }); %>
                 </div>
             </div>

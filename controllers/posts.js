@@ -7,6 +7,7 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_SECRET
 })
 
+
 module.exports = {
     // Posts Index
     // posts/index.ejs
@@ -70,9 +71,68 @@ module.exports = {
      * @param {*} next
      *  存在する 画像の削除を扱う
      * 新規投稿の画像を扱う
+     * * find the post by id
+        * check if there's any images for deletion
+        * assign deleteImages from req.body t its own variable
+        * loop over deleteImages
+            * delete images from cloudinary
+            * delete image from post.images
+        * check if there are any new images for upload*
+        * upload images
+            * add images to post.images array
+        * update the post with new any new properties
+        * save the updated post into the db
+        * redirect to show page
      */
     async postUpdate(req, res, next) {
-       let post = await Post.findByIdAndUpdate(req.params.id, req.body.post,{new:true})
+        // find the post by id
+       let post = await Post.findById(req.params.id)
+       console.log('postUpdate: postの中身', post)
+       // 画像削除のプロセス
+       // check if there's any images for deletion
+       if (req.body.deleteImages && req.body.deleteImages.length) {
+           // 変数に割り当てる
+           let deleteImages = req.body.deleteImages;
+           //loop over deleteImages
+           for(const public_id of deleteImages) {
+                // delete images from cloudinary
+                await cloudinary.v2.uploader.destroy(public_id);
+                // delete image from post.images
+                // postのimagesは配列なので複数形
+                for (const image of post.images) {
+                    if (image.public_id === public_id) {
+                        console.log('削除されるimage.public_id', image.public_id)
+                        let index = post.images.indexOf(image);
+                        console.log('削除された画像のindex', index)
+                        post.images.splice(index, 1);
+                    }
+                }
+           }
+       }
+       // 画像が投稿されるプロセス
+       // check if there are any new images for upload
+       if (req.files) {
+           // upload images
+           for(const file of req.files) {
+            let image = await cloudinary.v2.uploader.upload(file.path)
+            console.log('edit:cloudinaryImage', image)
+            // add images to post.images array
+            post.images.push({
+                url: image.secure_url,
+                public_id: image.public_id
+            })
+          }
+       }
+       // 画像以外の投稿プロセス
+       // update the post with new any new properties
+       post.title = req.body.post.title
+       post.description = req.body.post.description
+       post.price = req.body.post.price
+       post.location = req.body.post.location
+       //  save the updated post into the db
+       post.save()
+        // redirect to show page
+
        res.redirect(`/posts/${post.id}`)
     },
     // POST DELETE

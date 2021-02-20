@@ -19,7 +19,7 @@ const {
 
 
 
-/** GET posts 
+/** GET posts
  *一覧表示
  Get
  3000/posts
@@ -55,14 +55,14 @@ router.get('/:id', asyncErrorHandler(postShow))
  * formに投稿したデータを表示
  * 3000/posts/:id/edit
  */
-router.get('/:id/edit',asyncErrorHandler(postEdit))
+router.get('/:id/edit', asyncErrorHandler(postEdit))
 
 /**
  *  PUT update
  * formに投稿したデータの更新
  * 3000/posts/:id
  */
-router.put('/:id',asyncErrorHandler(postUpdate))
+router.put('/:id', upload.array('images', 4), asyncErrorHandler(postUpdate))
 
 /**
  *  DELETE destroy
