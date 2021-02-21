@@ -1,10 +1,13 @@
 const Post = require('../models/post')
 const cloudinary = require('cloudinary')
 
+const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
+const geocodingClient = mbxGeocoding({ accessToken: process.env.ACCESS_TOKEN})
+
 cloudinary.config({
-    cloud_name: process.env.CLOUDNAME,
-    api_key: process.env.APIKEY,
-    api_secret: process.env.CLOUDINARY_SECRET
+    cloud_name: process.env.CLOUD_NAME,
+    api_key: process.env.API_KEY,
+    api_secret: process.env.CLOUD_SECRET
 })
 
 
@@ -13,7 +16,7 @@ module.exports = {
     // posts/index.ejs
     async postIndex(req, res, next) {
         let posts = await Post.find({})
-        res.render('posts/index', { posts })
+        res.render('posts/index', { posts, title: '投稿一覧' })
     },
 
 
@@ -39,6 +42,15 @@ module.exports = {
                 public_id: image.public_id
             })
         }
+
+        let response = await geocodingClient
+        .forwardGeocode({
+            query: req.body.post.location,
+            limit: 1
+        })
+        .send()
+        req.body.post.coordinates = response.body.features[0].geometry.coordinates;
+
         let post = await Post.create(req.body.post)
         res.redirect(`/posts/${post.id}`)
     },
@@ -65,7 +77,7 @@ module.exports = {
     // Update post
     // new:trueをわたす必要
     /**
-     * 
+     *
      * @param {*} req
      * @param {*} res
      * @param {*} next
@@ -123,25 +135,38 @@ module.exports = {
             })
           }
        }
+       // formから届くデータ:req.body.post.location
+       // databaseから取得したデータ:post.location(冒頭で割り当てている)
+       if (req.body.post.location !== post.location) {
+            let response = await geocodingClient
+            .forwardGeocode({
+                query: req.body.post.location,
+                limit: 1
+            })
+            .send();
+            post.coordinates = response.body.features[0].geometry.coordinates;
+            post.location = req.body.post.location
+       }
        // 画像以外の投稿プロセス
        // update the post with new any new properties
        post.title = req.body.post.title
        post.description = req.body.post.description
        post.price = req.body.post.price
-       post.location = req.body.post.location
+
        //  save the updated post into the db
-       post.save()
+       post.save();
         // redirect to show page
 
-       res.redirect(`/posts/${post.id}`)
+       res.redirect(`/posts/${post.id}`);
     },
     // POST DELETE
     async postDestroy(req, res, next) {
-       const post =  await Post.findById(req.params.id)
-       for (image of post.images) {
-        await cloudinary.v2.uploader.destroy(image.public_id)
-       }
-      await post.remove()
-        res.redirect('/posts')
+        let post = await Post.findById(req.params.id)
+        for (const image of post.images) {
+            console.log('postDestroy', image)
+            await cloudinary.v2.uploader.destroy(image.public_id);
+        }
+        await post.remove();
+        res.redirect('/posts');
     }
 }

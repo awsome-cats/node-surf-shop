@@ -1,25 +1,31 @@
-# Posts Edit Form
+# Geocoding Post Address and Adding Its Marker to the Map
 
-* update checkbox name
-* add enctype to form
+## Update Post Model
 
-# Posts Update Route
+remove lat and lng add coordinaates: Array
 
-* add upload.array()
+```js
+const mbxGeocoding= require('@mapbox/mapbox-sdk/services/geocoding');
+const geocodingClient = mbxGeocoding({ accessToken: process.env.ACCESSTOKEN )}
+```
 
-# Posts Update Method
+- update create (POST) method
 
-* find the post by id
-* check if there's any images for deletion
+```js
+let response = await geocodingClient
+.forwardGeocode({
+query: req.body.post.location,
+limit: 1
+})
+.send();
+```
 
-  * assign deleteImages from req.body t its own variable
-  * loop over deleteImages
-    * delete images from cloudinary
-    * delete image from post.images
-* check if there are any new images for upload*
+- Assign the response's  coordinates to req.body.post.coordinates
+- Sae the post
 
-  * upload images
-    * add images to post.images array
-* update the post with new any new properties
-* save the updated post into the db
-* redirect to show page
+# Update the Posts Show View
+
+- Remove geojson object
+- remove forEach loop over geoson.features
+- Assign post variable from EJS local variable
+- Update marker to use post instead

@@ -1,6 +1,7 @@
 require('dotenv').config()
 const createError   = require('http-errors');
 const express       = require('express');
+const engine        = require('ejs-mate');
 const path          = require('path');
 const cookieParser  = require('cookie-parser');
 const logger        = require('body-parser')
@@ -18,6 +19,15 @@ const mongoose      = require('mongoose')
 
 const methodOverride = require('method-override')
 
+const  app = express();
+
+// Set title middleware
+app.use(function(req,res, next) {
+  res.locals.title = 'Surf Shop'
+  next()
+})
+
+
 
 // require routes
 const index   = require('./routes/index');
@@ -25,7 +35,7 @@ const posts   = require('./routes/posts');
 const reviews = require('./routes/reviews');
 
 
-const  app = express();
+
 
 
 
@@ -34,7 +44,7 @@ const  app = express();
  * local mongoDB
  * appインスタンス生成のあと
  */
-mongoose.connect('mongodb://localhost:27017/surf-shop', {
+mongoose.connect('mongodb://localhost:27017/surf-shop-mapbox', {
   useNewUrlParser: true
 }, () => console.log('DBに接続されました'))
 
@@ -49,14 +59,15 @@ db.once('open', function() {
 // End DB connection
 
 // view engine setup
+app.engine('ejs', engine);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+app.use(express.static('public'));
 
 
 
 
-app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -110,5 +121,6 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
 
 module.exports = app;

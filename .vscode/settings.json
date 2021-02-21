@@ -1,2 +1,3 @@
-{
+{ "trailing-spaces.trimOnSave": true,
+    "html.validate.scripts": false
 }
