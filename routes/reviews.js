@@ -1,21 +1,25 @@
-const express = require('express')
+const express             = require('express')
 // ネストされたparamsにアクセス
-const router = express.Router({ mergeParams: true})
+const router              = express.Router({ mergeParams: true}) // paramsのidにアクセスできる
+const {asyncErrorHandler} = require('../middleware')
+const {
+    reviewCreate,
+    reviewUpdate,
+    reviewDestroy
+
+} = require('../controllers/reviews')
 
 
-
-// 3 Post create    posts/:id/reviews
-router.post('/', (req, res) => {
-    res.send('create  posts/:id/reviews')
-})
+// Review reviews create    posts/:id/reviews
+router.post('/',asyncErrorHandler(reviewCreate))
 
 
-// PUT update     posts/:id/reviews/:review_id
+// PUT update  reviews   posts/:id/reviews/:review_id
 router.put('/:review_id', (req, res) => {
     res.send('update  posts/:id/reviews/:review_d')
 })
 
-// DELETE destroy /reviews/:id
+// DELETE destroy reviews  /reviews/:id
 router.delete('/:review_id', (req, res) => {
     res.send('delete  posts/:id/reviews/:review_id')
 })
