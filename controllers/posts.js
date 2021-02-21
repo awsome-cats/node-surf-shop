@@ -52,6 +52,8 @@ module.exports = {
         req.body.post.coordinates = response.body.features[0].geometry.coordinates;
 
         let post = await Post.create(req.body.post)
+        req.session.success = '投稿されました'
+        console.log('req', req.session)
         res.redirect(`/posts/${post.id}`)
     },
 
@@ -59,7 +61,8 @@ module.exports = {
 
     // Post show
     async postShow(req,res, next) {
-        let post = await Post.findById(req.params.id)
+
+        let post = await Post.findById(req.params.id);
         res.render('posts/show', { post })
     },
 
