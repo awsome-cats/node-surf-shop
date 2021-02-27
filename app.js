@@ -82,10 +82,12 @@ passport.deserializeUser(User.deserializeUser())
 app.use(function(req,res, next) {
   // trick loginUser
   req.user = {
-    "_id" : "603980232aa2204fa436c152",
-    "username" : "kenny"
+    "_id" : "603a7bebf521214a1805f276",
+    "username" : "kenny2"
   }
   res.locals.currentUser = req.user;
+  console.log('req.user', req.user)
+  console.log('currentUser', res.locals.currentUser)
   res.locals.title = 'Surf Shop';
   // 成功したとき
   res.locals.success = req.session.success || '';
