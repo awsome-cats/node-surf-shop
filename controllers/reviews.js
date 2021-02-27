@@ -27,7 +27,9 @@ module.exports = {
     },
     // Reviews Update
     async reviewUpdate(req, res, next) {
-
+        await Review.findByIdAndUpdate(req.params.review_id, req.body.review)
+        req.session.success = 'レビューが編集されました'
+        res.redirect(`/posts/${req.params.id}`)
     },
     // Review DELETE
     async reviewDestroy(req, res, next) {

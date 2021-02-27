@@ -48,15 +48,6 @@
             <hr>
         <% }); %>
 
-        <script>
-            $('.toggle-edit-form').on('click', function(){
-                // toggle the edit button text on click
-                $(this).text() === '編集'? $(this).text('キャンセル') :$(this).text('編集')
-                console.log('this',$(this)) // S.fn.init[button.toggle-edit-form]
-                // toggle visibility of the edit review form
-                $(this).siblings('.edit-review-form').toggle();
-            })
-        </script>
 
         <!--
             <% post.images.forEach(function(image){ %>
