@@ -62,12 +62,17 @@ module.exports = {
     // Post show
     // Postのformの結果とReviewの結果をとる
     // optionsはレビューを降順で並べ替えてるだけ
+    // populateでは関連のデータを取得する記述
     async postShow(req,res, next) {
-
-        let post = await Post.findById(req.params.id).populate({
-           path: 'reviews',
-           options: { sort: {'_Id': -1}}
-        });
+        let post = await Post.findById(req.params.id).populate(
+            {
+                path: 'reviews',
+                options: {sort: {'_Id': -1}},
+                populate: {
+                    path: 'author',
+                    model: 'User'
+                }
+            });
         res.render('posts/show', { post })
     },
 

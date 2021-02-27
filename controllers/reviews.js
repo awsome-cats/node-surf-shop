@@ -5,8 +5,6 @@ const Review = require('../models/Review')
 
 module.exports = {
 
-
-
     // Reviews Create
     async reviewCreate(req, res, next) {
         // find the post by its id
@@ -14,7 +12,8 @@ module.exports = {
         console.log('reviewCreate', post)
 
         // create the review
-        // req.body.review.author = req.user._id
+        // userのログインができている場合投稿者の氏名が表示されるはず
+        req.body.review.author = req.user._id
         let review = await Review.create(req.body.review)
         console.log('review', review)
         // assign review to post

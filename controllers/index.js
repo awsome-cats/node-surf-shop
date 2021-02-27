@@ -13,7 +13,7 @@ module.exports = {
         });
          User.register(newUser,  req.body.password)
 
-       res.redirect('/')
+        res.redirect('/')
     },
     // Post Login
     postLogin(req, res, next) {

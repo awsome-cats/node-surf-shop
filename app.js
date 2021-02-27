@@ -3,22 +3,21 @@ const createError   = require('http-errors');
 const express       = require('express');
 const engine        = require('ejs-mate');
 const path          = require('path');
+const logger        = require('morgan')
 const cookieParser  = require('cookie-parser');
-const logger        = require('body-parser')
 const bodyParser    = require('body-parser')
 const passport      = require('passport')
 const session       = require('express-session')
-
 // Mongoose DB
 const mongoose      = require('mongoose')
 const methodOverride = require('method-override')
 // Models
 const User          = require('./models/user')
+
 // require routes
 const index   = require('./routes/index');
 const posts   = require('./routes/posts');
 const reviews = require('./routes/reviews');
-
 
 const  app = express();
 
@@ -27,15 +26,15 @@ const  app = express();
  * local mongoDB
  * appインスタンス生成のあと
  */
-mongoose.connect('mongodb://localhost:27017/surf-shop-mapbox', {
+mongoose.connect('mongodb://localhost:27017/surf-shop', {
   useNewUrlParser: true
 }, () => console.log('DBに接続されました'))
 
 
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'))
-db.once('open', function() {
-  console.log('we are connected!!')
+db.once('open', () => {
+  console.log('mongoose connection !!DBに接続されました　')
 })
 
 // End DB connection
@@ -47,7 +46,7 @@ app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
 // Middleware Start
-
+app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -57,7 +56,7 @@ app.use(methodOverride('_method'));
 
 // express-session
 /**
- * passportを設定する前にsessionを開始する
+ * [位置]passportを設定する前にsessionを開始する
  * sessionとは、サーバー側でクライアントの状態を管理する方法
  */
 app.use(session({
@@ -81,6 +80,12 @@ passport.deserializeUser(User.deserializeUser())
 
 // Set title middleware
 app.use(function(req,res, next) {
+  // trick loginUser
+  req.user = {
+    "_id" : "603980232aa2204fa436c152",
+    "username" : "kenny"
+  }
+  res.locals.currentUser = req.user;
   res.locals.title = 'Surf Shop';
   // 成功したとき
   res.locals.success = req.session.success || '';
@@ -108,7 +113,7 @@ app.use('/posts/:id/reviews', reviews);
 app.use(function(req, res, next) {
  const err = new Error('お探しのページがみつかりません');
  err.status = 404;
- next(err)
+ next(err);
 });
 
 // error handler
@@ -120,9 +125,9 @@ app.use(function(err, req, res, next) {
   // // render the error page
   // res.status(err.status || 500);
   // res.render('error');
-  console.log('middleware:err', err)
+  console.log('middleware:err', err);
   req.session.error = err.message;
-  res.redirect('back')
+  res.redirect('back');
 });
 
 
