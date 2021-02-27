@@ -26,7 +26,7 @@
         <h2>レビューをする</h2>
         <form action="/posts/<%= post.id %>/reviews" method="POST">
             <textarea name="review[body]"></textarea>
-            <input type="number" min="1" max="5" step="1" required name="review[rating]">
+            <input type="number" min="1" max="5" step="1" required name="review[rating]"/>
             <input type="submit">
         </form>
         <h3>レビュー</h3>
@@ -37,8 +37,26 @@
                 <%= review.body %><br/>
                 評価: <%= review.rating %>
             </div>
+            <div>
+                <button class="toggle-edit-form">編集</button>
+                <form action="/posts/<%= post.id%>/reviews/<%= review.id%>?_method=PUT" method="POST" class="edit-review-form">
+                    <textarea name="review[body]"><%= review.body %></textarea>
+                    <input type="number" min="1" max="5" step="1" value="<%= review.rating %>" required name="review[rating]"/>
+                    <input type="submit" value="編集">
+                </form>
+            </div>
             <hr>
         <% }); %>
+
+        <script>
+            $('.toggle-edit-form').on('click', function(){
+                // toggle the edit button text on click
+                $(this).text() === '編集'? $(this).text('キャンセル') :$(this).text('編集')
+                console.log('this',$(this)) // S.fn.init[button.toggle-edit-form]
+                // toggle visibility of the edit review form
+                $(this).siblings('.edit-review-form').toggle();
+            })
+        </script>
 
         <!--
             <% post.images.forEach(function(image){ %>
