@@ -6,9 +6,27 @@ const Review = require('../models/Review')
 module.exports = {
 
     // Reviews Create
+    /**
+     *mongooseは非同期処理
+     async awaitで記述しているため、コールバック関数よりawaitのほうが現実的
+     exec()関数はコールバック関数の代わり
+     * @param {*} req
+     * @param {*} res
+     * @param {*} next
+     */
     async reviewCreate(req, res, next) {
         // find the post by its id
-        let post = await Post.findById(req.params.id)
+        let post = await Post.findById(req.params.id).populate('reviews').exec();
+        console.log('create review', post)
+        let haveReviewed = post.reviews.filter(review => {
+            return review.author.equals(req.user._id);
+        }).length;
+
+        if(haveReviewed){
+            req.session.error = "1回の投稿に1回レビューできます"
+            return res.redirect(`/posts/${post.id}`)
+        }
+
         console.log('reviewCreate', post)
 
         // create the review

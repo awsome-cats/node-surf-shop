@@ -1,6 +1,7 @@
-# Review Authorization
+# Restrict One Review Per User, Per Post
 
-- Create a second user with cURL
-- Change existing review's author to new user's id
-- Add isReviewAuthor async middlewear to PUT route and test it
-- Add if statement to EJS
+
+- populate reviews on post in reviewCreate method (in reviews contorller)
+- Filter post.reviews by author to see if logged in user has already reviewed the post
+- Assign hasReviewed to filtered arrays's length
+- Otherwise, create review, add to post.reviews, save  post, flash success and redirect
