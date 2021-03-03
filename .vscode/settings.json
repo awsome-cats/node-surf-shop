@@ -1,3 +1,4 @@
 { "trailing-spaces.trimOnSave": true,
-    "html.validate.scripts": false
+    "html.validate.scripts": false,
+    "editor.fontSize": 13
 }

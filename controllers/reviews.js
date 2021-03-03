@@ -1,4 +1,4 @@
-const Post = require('../models/post')
+// const Post = require('../models/post')
 const Review = require('../models/Review')
 
 
@@ -68,9 +68,11 @@ module.exports = {
      * @param {*} next
      */
     async reviewDestroy(req, res, next) {
+        // posts collectionからreviewsデータを削除
         await Post.findByIdAndUpdate(req.params.id, {
             $pull: { reviews: req.params.review_id}
         })
+        // reviews collectionからデータを削除
         await Review.findByIdAndRemove(req.params.review_id)
         req.session.success = 'レビューが削除されました';
         res.redirect(`/posts/${req.params.id}`);

@@ -13,6 +13,8 @@ const mongoose      = require('mongoose')
 const methodOverride = require('method-override')
 // Models
 const User          = require('./models/user')
+// const seedPosts     = require('./seed')
+// seedPosts();
 
 // require routes
 const index   = require('./routes/index');
@@ -27,7 +29,7 @@ const  app = express();
  * appインスタンス生成のあと
  */
 mongoose.connect('mongodb://localhost:27017/surf-shop', {
-  useNewUrlParser: true
+  useNewUrlParser: true, useUnifiedTopology: true
 }, () => console.log('DBに接続されました'))
 
 
@@ -120,16 +122,12 @@ app.use(function(req, res, next) {
 
 // error handler
 app.use(function(err, req, res, next) {
-  //set locals, only providing error in development
-  // res.locals.message = err.message;
-  // res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // // render the error page
-  // res.status(err.status || 500);
-  // res.render('error');
-  console.log('middleware:err', err);
-  req.session.error = err.message;
-  res.redirect('back');
+    console.log('middleware:err', err);
+    req.session.error = err.message;
+    res.redirect('back');
+
+
 });
 
 

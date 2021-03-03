@@ -1,7 +1,9 @@
 const Post = require('../models/post')
+// const Review = require('../models/review')
 const cloudinary = require('cloudinary')
 
 const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
+
 const geocodingClient = mbxGeocoding({ accessToken: process.env.ACCESS_TOKEN})
 
 cloudinary.config({
@@ -15,11 +17,13 @@ module.exports = {
     // Posts Index
     // posts/index.ejs
     async postIndex(req, res, next) {
-        let posts = await Post.find({})
+        // let posts = await Post.find({})
+        let posts = await Post.paginate({}, {
+            page:req.query.page || 1,
+            limit: 10
+        })
         res.render('posts/index', { posts, title: '投稿一覧' })
     },
-
-
 
     // Posts New
     // posts/new.ejs
@@ -27,8 +31,6 @@ module.exports = {
     postNew(req, res, next) {
         res.render('posts/new')
     },
-
-
 
     async postCreate(req, res, next) {
         // req.bodyが必要
@@ -57,8 +59,6 @@ module.exports = {
         res.redirect(`/posts/${post.id}`)
     },
 
-
-
     // Post show
     // Postのformの結果とReviewの結果をとる
     // optionsはレビューを降順で並べ替えてるだけ
@@ -76,16 +76,12 @@ module.exports = {
         res.render('posts/show', { post })
     },
 
-
-
     // Post edit
     async postEdit (req, res) {
         // res.send('Edit /posts/:id/edit')
        let post = await Post.findById(req.params.id)
        res.render('posts/edit', { post })
     },
-
-
 
     // Update post
     // new:trueをわたす必要
@@ -180,6 +176,17 @@ module.exports = {
             await cloudinary.v2.uploader.destroy(image.public_id);
         }
         await post.remove();
+
         res.redirect('/posts');
     }
+    // deleteReviewHooks (){
+    //     Post.pre('remove', async function(){
+    //         await Review.remove({
+    //             _id: {
+    //                 $in: this.reviews
+    //             }
+    //         })
+    //     })
+    // }
 }
+

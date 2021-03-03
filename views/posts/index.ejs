@@ -7,7 +7,7 @@
 </head>
 <body>
     <h1>投稿一覧</h1>
-    <% posts.forEach(function(post) {%>
+    <% posts.docs.forEach(function(post) {%>
     <div>
         <h2>タイトル:<p><%= post.title %></p></h2>
         <p>金額: <%= post.price%></p>
