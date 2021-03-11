@@ -16,7 +16,7 @@
  */
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema;
-// const Review = require('./review');
+const Review = require('./review');
 const mongoosePaginate = require('mongoose-paginate')
 
 const PostSchema = new Schema({
@@ -40,15 +40,15 @@ const PostSchema = new Schema({
 });
 // if(!mongoose.models.Post) mongoose.model('Post', PostSchema)
 
-// PostSchema.pre('remove', async function() {
-//     const err = new Error('something went wrong')
-//     console.log('PostSchema err', err)
-//     await Review.remove({
-//         _id: {
-//             $in:this.reviews
-//         }
-//     });
-// });
+PostSchema.pre('remove', async function() {
+    const err = new Error('something went wrong')
+    console.log('PostSchema err', err)
+    await Review.remove({
+        _id: {
+            $in:this.reviews
+        }
+    });
+});
 
 PostSchema.plugin(mongoosePaginate)
 

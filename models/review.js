@@ -18,6 +18,5 @@ const ReviewSchema = new Schema({
         }
 })
 
-if(!mongoose.models.Review) mongoose.model('Review', ReviewSchema)
 
 module.exports = mongoose.model('Review',ReviewSchema)

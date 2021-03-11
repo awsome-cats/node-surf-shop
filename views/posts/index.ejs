@@ -7,6 +7,7 @@
 </head>
 <body>
     <h1>投稿一覧</h1>
+    <% include ../partials/paginatePost%>
     <% posts.docs.forEach(function(post) {%>
     <div>
         <h2>タイトル:<p><%= post.title %></p></h2>
@@ -16,5 +17,6 @@
         <a href="/posts/<%= post.id %>">詳細</a>
     </div>
     <%}); %>
+    <% include ../partials/paginatePost%>
 </body>
 </html>

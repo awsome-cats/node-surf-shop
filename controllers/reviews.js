@@ -1,5 +1,5 @@
-// const Post = require('../models/post')
-const Review = require('../models/Review')
+const Post = require('../models/post')
+const Review = require('../models/review')
 
 
 
