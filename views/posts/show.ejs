@@ -1,27 +1,47 @@
 
     <% layout('layouts/post-show-layout') -%>
         <div>
+            <!-- NOTE: POST 出力 -->
             <p>タイトル:<%= post.title %></p>
             <p>金額: <%= post.price%></p>
             <p>内容: <%= post.description%></p>
             <p>場所: <%= post.location%></p>
+            <!-- NOTE: Reviewがあれば、出力  -->
+            <p>
+                <% for (let i=0; i < 5;i++){%>
+                    <% if(i < floorRating) { %>
+                        <i class="fas fa-star"></i>
+                    <%} else if((post.avgRating - i) > 0 && (post.avgRating - i) < 1) { %>
+                        <!--- display a half start--->
+                        <i class="fas fa-star-half-alt"></i>
+                    <% } else { %>
+                        <i class="far fa-star"></i>
+                    <% } %>
+                <% } %>
+                <%= `${post.avgRating} star${post.avgRating === 1? '': 's'}`%>
+            </p>
             <div>
                 <% post.images.forEach(function(image){ %>
                     <img src="<%= image.url %>" alt="プログラミング画像" width="200px
                     ">
                 <% }); %>
             </div>
+            <!-- NOTE: Map出力 -->
             <div id='map'></div>
+            <!-- NOTE: ページ遷移 -->
             <div>
                 <a href="/posts/<%= post.id %>/edit">
                 <button>編集する</button></a>
             </div>
         </div>
+        <!-- NOTE: 削除FORM -->
         <div>
             <form action="/posts/<%= post.id %>?_method=DELETE" method="POST">
             <input type="submit" value="削除">
             </form>
         </div>
+
+        <!-- NOTE: ReviewFORM スターモジュール -->
 
         <h2>レビューをする</h2>
         <form action="/posts/<%= post.id %>/reviews" method="POST">
@@ -45,16 +65,17 @@
             <input type="submit">
         </form>
         <h3>レビュー</h3>
-        <!--- display all reviews --->
+        <!--- NOTE: レビューの表示  --->
         <% post.reviews.forEach(function(review){ %>
             <div>
                 <%= review.author.username %>
                 <%= review.body %><br/>
                 評価: <%= review.rating %>
             </div>
+            <!-- NOTE: 条件分岐 -->
             <% if (review.author.equals(currentUser._id)) {%>
             <div>
-                <button class="toggle-edit-form">編集</button>
+                <button class="toggle-edit-form">編集する</button>
                 <form action="/posts/<%= post.id%>/reviews/<%= review.id%>?_method=PUT" method="POST" class="edit-review-form">
                     <textarea name="review[body]"><%= review.body %></textarea>
                     <!-- <input type="number" min="1" max="5" step="1" value="<%= review.rating %>" required name="review[rating]"/> -->
@@ -73,14 +94,14 @@
                         <input type="radio" id="edit-rate5" name="review[rating]" value="5" />
                         <label for="edit-rate5" title="Amazing">5 stars</label>
                       </fieldset>
-                    <input type="submit" value="編集">
+                    <input type="submit" value="編集を投稿する">
                 </form>
                 <!-- jQuery ratingのスターを保持する チェックボックスがチェック状態になる -->
                 <script>
                     $('#edit-rate<%= review.rating %>').prop('checked', true)
                 </script>
                 <form action="/posts/<%= post.id%>/reviews/<%= review.id%>?_method=DELETE" method="POST"">
-                    <input type="submit" value="削除">
+                    <input type="submit" value="レビューを削除">
                 </form>
             </div>
             <% };%>

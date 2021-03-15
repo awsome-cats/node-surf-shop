@@ -17,7 +17,7 @@ module.exports = {
     async reviewCreate(req, res, next) {
         // find the post by its id
         let post = await Post.findById(req.params.id).populate('reviews').exec();
-        console.log('create review', post)
+        // console.log('create review', post)
         let haveReviewed = post.reviews.filter(review => {
             return review.author.equals(req.user._id);
         }).length;
@@ -27,16 +27,16 @@ module.exports = {
             return res.redirect(`/posts/${post.id}`)
         }
 
-        console.log('reviewCreate', post)
+        // console.log('reviewCreate', post)
 
         // create the review
         // userのログインができている場合投稿者の氏名が表示されるはず
         req.body.review.author = req.user._id
         let review = await Review.create(req.body.review);
-        console.log('review', review);
+        // console.log('review', review);
         // assign review to post
         post.reviews.push(review);
-        console.log('post', post);
+        // console.log('post', post);
         // redirect to the post
         post.save();
         req.session.success = 'レビューが投稿されました'

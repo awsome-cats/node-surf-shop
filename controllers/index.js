@@ -1,17 +1,23 @@
 const User = require('../models/user')
+const Post = require('../models/post')
 const passport = require('passport')
-
+const mapBoxToken = process.env.MAP_BOX_TOKEN
 
 // error Handlerを使用
 module.exports = {
+    //Get /
+    async landingPage(req,res, next) {
+        const posts = await Post.find({})
+        res.render('index', { posts, mapBoxToken, title:'Search By Map - Home' })
+    },
     // POST /register
-    postRegister(req, res, next) {
+    async postRegister(req, res, next) {
         const newUser = new User({
             username: req.body.username,
             email: req.body.email,
             image: req.body.image
         });
-         User.register(newUser,  req.body.password)
+         await User.register(newUser,  req.body.password)
 
         res.redirect('/')
     },

@@ -42,6 +42,9 @@ db.once('open', () => {
 // End DB connection
 
 // use engine setup
+/**
+ * NOTE: ejs-mate
+ */
 app.engine('ejs', engine);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -84,12 +87,12 @@ passport.deserializeUser(User.deserializeUser())
 app.use(function(req,res, next) {
   // trick loginUser
   req.user = {
-    "_id" : "603a7bebf521214a1805f276",
-    "username" : "kenny2"
+    "_id" :"604a263d7150231ff8c43f17",
+    "username" : "kenny3"
   }
   res.locals.currentUser = req.user;
-  console.log('req.user', req.user)
-  console.log('currentUser', res.locals.currentUser)
+  // console.log('req.user', req.user)
+  // console.log('currentUser', res.locals.currentUser)
   res.locals.title = 'Surf Shop';
   // 成功したとき
   res.locals.success = req.session.success || '';

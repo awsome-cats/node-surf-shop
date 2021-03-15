@@ -1,10 +1,13 @@
 const Post = require('../models/post')
-// const Review = require('../models/review')
+const Review = require('../models/review')
 const cloudinary = require('cloudinary')
 
+/**
+ * NOTE: MAP_BOX_TOKEN: アプリケーションのToken, defaultのtokenとは違う
+ */
 const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
 
-const geocodingClient = mbxGeocoding({ accessToken: process.env.ACCESS_TOKEN})
+const geocodingClient = mbxGeocoding({ accessToken: process.env.MAP_BOX_TOKEN})
 
 cloudinary.config({
     cloud_name: process.env.CLOUD_NAME,
@@ -15,7 +18,7 @@ cloudinary.config({
 
 module.exports = {
     // Posts Index
-    // posts/index.ejs
+    // views/posts/index.ejs
     async postIndex(req, res, next) {
         // let posts = await Post.find({})
         let posts = await Post.paginate({}, {
@@ -23,7 +26,7 @@ module.exports = {
             limit: 10
         })
         posts.page = Number(posts.page);
-        res.render('posts/index', { posts, title: '投稿一覧' })
+        res.render('posts/index', { posts,mapBoxToken: process.env.MAP_BOX_TOKEN, title: '投稿一覧' })
     },
 
     // Posts New
@@ -39,12 +42,14 @@ module.exports = {
         req.body.post.images = []
         for(const file of req.files) {
             let image = await cloudinary.v2.uploader.upload(file.path)
-            console.log('cloudinaryImage', image)
             req.body.post.images.push({
                 url: image.secure_url,
                 public_id: image.public_id
             })
         }
+        /**
+         * NOTE: map-box-test.jsで緯度経度を取得したコード
+         */
 
         let response = await geocodingClient
         .forwardGeocode({
@@ -52,11 +57,12 @@ module.exports = {
             limit: 1
         })
         .send()
+        // console.log('create response', response.body.features[0])
+        // NOTE: 投稿された場所がmap boxの位置とおなじだと割り当てる必要がある
         req.body.post.coordinates = response.body.features[0].geometry.coordinates;
 
         let post = await Post.create(req.body.post)
         req.session.success = '投稿されました'
-        console.log('req', req.session)
         res.redirect(`/posts/${post.id}`)
     },
 
@@ -65,16 +71,18 @@ module.exports = {
     // optionsはレビューを降順で並べ替えてるだけ
     // populateでは関連のデータを取得する記述
     async postShow(req,res, next) {
-        let post = await Post.findById(req.params.id).populate(
-            {
+        let post = await Post.findById(req.params.id).populate({
                 path: 'reviews',
-                options: {sort: {'_Id': -1}},
+                options: {sort: {'_id': -1}},
                 populate: {
                     path: 'author',
                     model: 'User'
                 }
             });
-        res.render('posts/show', { post })
+            //section 12
+            const floorRating = post.calculateAvgRating();
+            let mapBoxToken = process.env.MAP_BOX_TOKEN
+            res.render('posts/show', { post, mapBoxToken, floorRating })
     },
 
     // Post edit
@@ -109,7 +117,7 @@ module.exports = {
     async postUpdate(req, res, next) {
         // find the post by id
        let post = await Post.findById(req.params.id)
-       console.log('postUpdate: postの中身', post)
+    //    console.log('postUpdate: postの中身', post)
        // 画像削除のプロセス
        // check if there's any images for deletion
        if (req.body.deleteImages && req.body.deleteImages.length) {
@@ -123,9 +131,9 @@ module.exports = {
                 // postのimagesは配列なので複数形
                 for (const image of post.images) {
                     if (image.public_id === public_id) {
-                        console.log('削除されるimage.public_id', image.public_id)
+                        // console.log('削除されるimage.public_id', image.public_id)
                         let index = post.images.indexOf(image);
-                        console.log('削除された画像のindex', index)
+                        // console.log('削除された画像のindex', index)
                         post.images.splice(index, 1);
                     }
                 }
@@ -137,7 +145,7 @@ module.exports = {
            // upload images
            for(const file of req.files) {
             let image = await cloudinary.v2.uploader.upload(file.path)
-            console.log('edit:cloudinaryImage', image)
+            // console.log('edit:cloudinaryImage', image)
             // add images to post.images array
             post.images.push({
                 url: image.secure_url,
@@ -173,21 +181,12 @@ module.exports = {
     async postDestroy(req, res, next) {
         let post = await Post.findById(req.params.id)
         for (const image of post.images) {
-            console.log('postDestroy', image)
+            // console.log('postDestroy', image)
             await cloudinary.v2.uploader.destroy(image.public_id);
         }
         await post.remove();
 
         res.redirect('/posts');
     }
-    // deleteReviewHooks (){
-    //     Post.pre('remove', async function(){
-    //         await Review.remove({
-    //             _id: {
-    //                 $in: this.reviews
-    //             }
-    //         })
-    //     })
-    // }
 }
 

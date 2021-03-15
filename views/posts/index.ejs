@@ -1,12 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <% layout('layouts/boilerplate') -%>
     <title><%= title %></title>
-</head>
-<body>
+
     <h1>投稿一覧</h1>
+    <div id="map"></div>
     <% include ../partials/paginatePost%>
     <% posts.docs.forEach(function(post) {%>
     <div>
@@ -18,5 +14,10 @@
     </div>
     <%}); %>
     <% include ../partials/paginatePost%>
-</body>
-</html>
+
+    <script>
+        mapboxgl.accessToken = "<%= mapBoxToken %>";
+        var posts = {features: <%- JSON.stringify(posts.docs) %>};
+    </script>
+    <script src="/javascripts/allPostsClusterMap.js"></script>
+
