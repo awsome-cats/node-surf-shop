@@ -21,9 +21,12 @@ module.exports = {
     // views/posts/index.ejs
     async postIndex(req, res, next) {
         // let posts = await Post.find({})
+        // NOTE: paginateの並べ替えドキュメントあり
+        // NOTE: mongooseのsort方法 sort: '-_id'
         let posts = await Post.paginate({}, {
             page:req.query.page || 1,
-            limit: 10
+            limit: 10,
+            sort: {'_id': -1}
         })
         posts.page = Number(posts.page);
         res.render('posts/index', { posts,mapBoxToken: process.env.MAP_BOX_TOKEN, title: '投稿一覧' })
@@ -59,9 +62,13 @@ module.exports = {
         .send()
         // console.log('create response', response.body.features[0])
         // NOTE: 投稿された場所がmap boxの位置とおなじだと割り当てる必要がある
-        req.body.post.coordinates = response.body.features[0].geometry.coordinates;
+        req.body.post.geometry = response.body.features[0].geometry;
 
-        let post = await Post.create(req.body.post)
+        // let post = await Post.create(req.body.post)
+        // NOTE: 上記のPost.createから変更しました あまりなじみのない方法です
+        let post = new Post(req.body.post);
+		post.properties.description = `<strong><a href="/posts/${post._id}">${post.title}</a></strong><p>${post.location}</p><p>${post.description.substring(0, 20)}...</p>`;
+		await post.save();
         req.session.success = '投稿されました'
         res.redirect(`/posts/${post.id}`)
     },
@@ -162,7 +169,7 @@ module.exports = {
                 limit: 1
             })
             .send();
-            post.coordinates = response.body.features[0].geometry.coordinates;
+            post.geometry = response.body.features[0].geometry;
             post.location = req.body.post.location
        }
        // 画像以外の投稿プロセス
@@ -170,6 +177,7 @@ module.exports = {
        post.title = req.body.post.title
        post.description = req.body.post.description
        post.price = req.body.post.price
+       post.properties.description = `<strong><a href="/posts/${post._id}">${post.title}</a></strong><p>${post.location}</p><p>${post.description.substring(0, 20)}...</p>`;
 
        //  save the updated post into the db
        post.save();
