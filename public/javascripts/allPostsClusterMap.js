@@ -1,8 +1,9 @@
 var map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/light-v9',
-    center: [-98.55562, 39.809734],//USA
-    zoom: 3.3
+    // center: [-98.55562, 39.809734],//USA
+    center: [139.691706, 35.689488],//Tokyo
+    zoom: 3.7
 });
 
 map.addControl(new MapboxGeocoder({

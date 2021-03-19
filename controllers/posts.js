@@ -1,7 +1,7 @@
 const Post = require('../models/post')
 const Review = require('../models/review')
-const cloudinary = require('cloudinary')
-
+// const cloudinary = require('cloudinary')
+const { cloudinary } = require('../cloudinary')
 /**
  * NOTE: MAP_BOX_TOKEN: アプリケーションのToken, defaultのtokenとは違う
  */
@@ -9,11 +9,11 @@ const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
 
 const geocodingClient = mbxGeocoding({ accessToken: process.env.MAP_BOX_TOKEN})
 
-cloudinary.config({
-    cloud_name: process.env.CLOUD_NAME,
-    api_key: process.env.API_KEY,
-    api_secret: process.env.CLOUD_SECRET
-})
+// cloudinary.config({
+//     cloud_name: process.env.CLOUD_NAME,
+//     api_key: process.env.API_KEY,
+//     api_secret: process.env.CLOUD_SECRET
+// })
 
 
 module.exports = {
@@ -44,10 +44,9 @@ module.exports = {
         // postに代入した変数からidを取得し、リダイレクト
         req.body.post.images = []
         for(const file of req.files) {
-            let image = await cloudinary.v2.uploader.upload(file.path)
             req.body.post.images.push({
-                url: image.secure_url,
-                public_id: image.public_id
+                url: file.secure_url,
+                public_id: file.public_id
             })
         }
         /**
@@ -151,12 +150,11 @@ module.exports = {
        if (req.files) {
            // upload images
            for(const file of req.files) {
-            let image = await cloudinary.v2.uploader.upload(file.path)
             // console.log('edit:cloudinaryImage', image)
             // add images to post.images array
             post.images.push({
-                url: image.secure_url,
-                public_id: image.public_id
+                url: file.secure_url,
+                public_id: file.public_id
             })
           }
        }

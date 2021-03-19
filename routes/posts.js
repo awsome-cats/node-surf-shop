@@ -1,11 +1,19 @@
 const express = require('express')
 const router = express.Router()
 /**
+ * NOTE:
  * multerオブジェクトで作成されたuploadsディレクトリは
  * uploadされる前に一時的に保存される場所
+ * const upload = multer({'dest': 'uploads/'});
  */
 const multer = require('multer')
-const upload = multer({'dest': 'uploads/'});
+/**
+ * NOTE:storageに保存
+ */
+const {storage, cloudinay }= require('../cloudinary')
+const upload = multer({ storage })
+
+
 const { asyncErrorHandler } = require('../middleware')
 const {
     postIndex,
