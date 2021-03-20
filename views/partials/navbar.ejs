@@ -1,6 +1,26 @@
-<% %>
+<style>
+    ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+
+    }
+    li {
+        display: inline;
+        padding: 5px;
+    }
+</style>
 <ul>
     <li><a class="color" href="/">Home</a></li>
     <li><a href="/posts">投稿一覧</a></li>
-    <li><a href="/posts/new">新しい投稿</a></li>
+    <% if(!currentUser) {%>
+        <li><a href="/register">登録</a></li>
+        <li><a href="/login">ログイン</a></li>
+    <%} else {%>
+        <li><a href="/posts/new">新しい投稿</a></li>
+        <li><a href="/logout">ログアウト</a></li>
+        Welcome, <%= currentUser.username %>
+    <%}%>
+
+
 </ul>

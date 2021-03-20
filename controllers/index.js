@@ -12,7 +12,7 @@ module.exports = {
     },
     //GET /register
     getRegister(req, res,next) {
-        req.render('register', {title: 'Register'})
+        res.render('register', {title: 'Register'})
     },
     // POST /register
     async postRegister(req, res, next) {
@@ -33,7 +33,7 @@ module.exports = {
     },
     // Get Login
     getLogin(req, res,next) {
-        req.render('login', {title: 'login'})
+        res.render('login', {title: 'login'})
     },
     // Post Login
     postLogin(req, res, next) {

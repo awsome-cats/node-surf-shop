@@ -87,8 +87,10 @@ passport.deserializeUser(User.deserializeUser())
 app.use(function(req,res, next) {
   // trick loginUser
   // req.user = {
-  //   "_id" :"604a263d7150231ff8c43f17",
-  //   "username" : "kenny3"
+  //   // "_id" :"604a263d7150231ff8c43f17",
+  //   // "username" : "kenny3"
+  //   "_id" :"1",
+  //   "username" : "jjj"
   // }
   res.locals.currentUser = req.user;
   // console.log('req.user', req.user)
