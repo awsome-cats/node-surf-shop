@@ -43,12 +43,15 @@ module.exports = {
         // req.bodyが必要
         // postに代入した変数からidを取得し、リダイレクト
         req.body.post.images = []
+        console.log('req', req.body)
         for(const file of req.files) {
             req.body.post.images.push({
-                url: file.secure_url,
-                public_id: file.public_id
+                path: file.path,
+                filename: file.filename
             })
+            console.log('req-image', req.body.post.images)
         }
+
         /**
          * NOTE: map-box-test.jsで緯度経度を取得したコード
          */
@@ -67,7 +70,8 @@ module.exports = {
         // NOTE: 上記のPost.createから変更しました あまりなじみのない方法です
         let post = new Post(req.body.post);
 		post.properties.description = `<strong><a href="/posts/${post._id}">${post.title}</a></strong><p>${post.location}</p><p>${post.description.substring(0, 20)}...</p>`;
-		await post.save();
+
+        await post.save();
         req.session.success = '投稿されました'
         res.redirect(`/posts/${post.id}`)
     },
@@ -85,6 +89,7 @@ module.exports = {
                     model: 'User'
                 }
             });
+            console.log('post', post)
             //section 12
             const floorRating = post.calculateAvgRating();
             let mapBoxToken = process.env.MAP_BOX_TOKEN
@@ -95,6 +100,7 @@ module.exports = {
     async postEdit (req, res) {
         // res.send('Edit /posts/:id/edit')
        let post = await Post.findById(req.params.id)
+       console.log('edit', post)
        res.render('posts/edit', { post })
     },
 
@@ -126,18 +132,20 @@ module.exports = {
     //    console.log('postUpdate: postの中身', post)
        // 画像削除のプロセス
        // check if there's any images for deletion
+       console.log('edit', post )
        if (req.body.deleteImages && req.body.deleteImages.length) {
            // 変数に割り当てる
            let deleteImages = req.body.deleteImages;
+           console.log('deleteImages', deleteImages)
            //loop over deleteImages
-           for(const public_id of deleteImages) {
+           for(const filename of deleteImages) {
                 // delete images from cloudinary
-                await cloudinary.v2.uploader.destroy(public_id);
+                await cloudinary.uploader.destroy(filename);
                 // delete image from post.images
                 // postのimagesは配列なので複数形
                 for (const image of post.images) {
-                    if (image.public_id === public_id) {
-                        // console.log('削除されるimage.public_id', image.public_id)
+                    if (image.filename === filename) {
+                        // console.log('削除されるimage.filename', image.filename)
                         let index = post.images.indexOf(image);
                         // console.log('削除された画像のindex', index)
                         post.images.splice(index, 1);
@@ -153,8 +161,8 @@ module.exports = {
             // console.log('edit:cloudinaryImage', image)
             // add images to post.images array
             post.images.push({
-                url: file.secure_url,
-                public_id: file.public_id
+                path: file.path,
+                filename: file.filename
             })
           }
        }
@@ -188,7 +196,7 @@ module.exports = {
         let post = await Post.findById(req.params.id)
         for (const image of post.images) {
             // console.log('postDestroy', image)
-            await cloudinary.v2.uploader.destroy(image.public_id);
+            await cloudinary.uploader.destroy(image.filename);
         }
         await post.remove();
 

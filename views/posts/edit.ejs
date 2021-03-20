@@ -18,13 +18,13 @@
                 <!--
                     送信された画像表示
                     post.imagesをforEachすることでそれぞれを出力
-                    その間にimagesが持つimage.urlやi(index), public_id等を出力
+                    その間にimagesが持つimage.urlやi(index), filename等を出力
                 -->
                 <div>
                     <% post.images.forEach(function(image, i) { %>
-                        <img src="<%= image.url %>" width="100px">
+                        <img src="<%= image.path %>" width="100px">
                         <label for="image<%= i %>">削除?</label>
-                        <input type="checkbox" name="deleteImages[]" class="imageDeleteCheckbox" id="image<%= i %>" value="<%= image.public_id %>">
+                        <input type="checkbox" name="deleteImages[]" class="imageDeleteCheckbox" id="image<%= i %>" value="<%= image.filename %>">
                     <% }); %>
                 </div>
             </div>

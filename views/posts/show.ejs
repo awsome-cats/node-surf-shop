@@ -21,8 +21,8 @@
                 <%= `${post.avgRating} star${post.avgRating === 1? '': 's'}`%>
             </p>
             <div>
-                <% post.images.forEach(function(image){ %>
-                    <img src="<%= image.url %>" alt="プログラミング画像" width="200px
+                <%  post.images.forEach(function(image){ console.log('image', image)%>
+                    <img src="<%= image.path %>" alt="プログラミング画像" width="200px
                     ">
                 <% }); %>
             </div>

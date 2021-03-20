@@ -12,7 +12,7 @@
  *NEED
  images
  *二つのプロパティ
-    public_id: クラウディナリーのimageデータを編集、削除に使用する
+    filename: クラウディナリーのimageデータを編集、削除に使用する
  */
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema;
@@ -23,7 +23,7 @@ const PostSchema = new Schema({
     title: String,
     price: String,
     description: String,
-    images: [{ url: String, public_id:String}],
+    images: [{ path: String, filename:String}],
     location: String,
     geometry: {
         type: {

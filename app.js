@@ -30,13 +30,13 @@ const  app = express();
  */
 mongoose.connect('mongodb://localhost:27017/surf-shop', {
   useNewUrlParser: true, useUnifiedTopology: true
-}, () => console.log('DBに接続されました'))
+}, () => console.log('Connected DB!!'))
 
 
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'))
 db.once('open', () => {
-  console.log('mongoose connection !!DBに接続されました　')
+  console.log('mongoose connection !!Connected DB !!　')
 })
 
 // End DB connection
