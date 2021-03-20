@@ -86,10 +86,10 @@ passport.deserializeUser(User.deserializeUser())
 // Set title middleware
 app.use(function(req,res, next) {
   // trick loginUser
-  req.user = {
-    "_id" :"604a263d7150231ff8c43f17",
-    "username" : "kenny3"
-  }
+  // req.user = {
+  //   "_id" :"604a263d7150231ff8c43f17",
+  //   "username" : "kenny3"
+  // }
   res.locals.currentUser = req.user;
   // console.log('req.user', req.user)
   // console.log('currentUser', res.locals.currentUser)

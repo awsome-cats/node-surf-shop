@@ -10,6 +10,10 @@ module.exports = {
         const posts = await Post.find({})
         res.render('index', { posts, mapBoxToken, title:'Search By Map - Home' })
     },
+    //GET /register
+    getRegister(req, res,next) {
+        req.render('register', {title: 'Register'})
+    },
     // POST /register
     async postRegister(req, res, next) {
         const newUser = new User({
@@ -17,9 +21,19 @@ module.exports = {
             email: req.body.email,
             image: req.body.image
         });
-         await User.register(newUser,  req.body.password)
+         let user = await User.register(newUser,  req.body.password)
+         console.log('user', user)
+         req.login(user, function(err) {
+             if (err) return next(err);
+             req.session.success = `Welcome to Map Search, ${user.username}`
+             res.redirect('/')
+         })
 
         res.redirect('/')
+    },
+    // Get Login
+    getLogin(req, res,next) {
+        req.render('login', {title: 'login'})
     },
     // Post Login
     postLogin(req, res, next) {
