@@ -4,7 +4,11 @@ const Schema = mongoose.Schema;
 
 
 const UserSchema = new Schema({
-    email: String,
+    // email: String,
+    /**NOTE:
+     * uniqueにすることでemailの検証をやりやすくする
+     */
+    email: {type: String, unique: true, required: true,},
     image: String
 })
 

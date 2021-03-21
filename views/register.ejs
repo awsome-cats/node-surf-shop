@@ -2,7 +2,7 @@
 <form action="/register" method="POST">
     <div>
         <label for="username">ユーザー</label>
-        <input type="text" id="username" name="username" placeholder="username" required>
+        <input type="text" id="username" name="username" placeholder="username" required value="<%= username %>">
     </div>
     <div>
         <label for="password">パスワード</label>
@@ -10,7 +10,7 @@
     </div>
     <div>
         <label for="email">Eメール</label>
-        <input type="email" id="email" name="email" placeholder="email" required>
+        <input type="email" id="email" name="email" placeholder="email" required value="<%= email %>">
     </div>
     <div>
         <label for="image">画像</label>

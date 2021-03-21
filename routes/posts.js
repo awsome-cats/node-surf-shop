@@ -14,7 +14,7 @@ const {storage, cloudinay }= require('../cloudinary')
 const upload = multer({ storage })
 
 
-const { asyncErrorHandler } = require('../middleware')
+const { asyncErrorHandler, isLoggedIn } = require('../middleware')
 const {
     postIndex,
     postNew,
@@ -35,21 +35,24 @@ const {
 */
 router.get('/',asyncErrorHandler(postIndex))
 
-/**
+/**NOTE:
  *  Get new
  * 新規投稿
  * 3000/posts/new
+ * ログインしているか認証する必要がある
  */
-router.get('/new', postNew)
+router.get('/new', isLoggedIn, postNew)
 
-/*Post create
+/*NOTE:
+Post create
 *新規投稿
 *3000/posts
 *redirect(`/posts/${post.id}`)
 upload: imagesとはformからしゅとくする入力の名前
 4: 画像の最大数を表す
+*ログインしているかが必要
 */
-router.post('/', upload.array('images', 4),asyncErrorHandler(postCreate))
+router.post('/',isLoggedIn, upload.array('images', 4),asyncErrorHandler(postCreate))
 
 /**
  * Get show

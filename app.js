@@ -8,6 +8,7 @@ const cookieParser  = require('cookie-parser');
 const bodyParser    = require('body-parser')
 const passport      = require('passport')
 const session       = require('express-session')
+const favicon       = require('serve-favicon')
 // Mongoose DB
 const mongoose      = require('mongoose')
 const methodOverride = require('method-override')
@@ -21,7 +22,7 @@ const index   = require('./routes/index');
 const posts   = require('./routes/posts');
 const reviews = require('./routes/reviews');
 
-const  app = express();
+const  app    = express();
 
 // Start DB connection
 /**
@@ -49,8 +50,8 @@ app.engine('ejs', engine);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
-
 // Middleware Start
+
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -82,8 +83,18 @@ passport.deserializeUser(User.deserializeUser())
 
 
 
-
-// Set title middleware
+/**
+ * NOTE: application level middleware関数
+   リクエストを受け取る度に実行
+    Set title middleware
+ * localsの中身
+ * res [Object: null prototype] {
+  currentUser: undefined,
+  title: 'Surf Shop',
+  success: '',
+  error: ''
+}
+ */
 app.use(function(req,res, next) {
   // trick loginUser
   // req.user = {
@@ -111,7 +122,7 @@ app.use(function(req,res, next) {
 
 
 
-// Mount routes
+// Mount routes path middleware関数
 app.use('/', index);
 app.use('/posts', posts);
 app.use('/posts/:id/reviews', reviews);
