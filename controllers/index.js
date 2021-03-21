@@ -12,6 +12,7 @@ module.exports = {
     },
     //GET /register
     getRegister(req, res,next) {
+        if(req.isAuthenticated()) return res.redirect('/')
         res.render('register', {title: 'Register', username: '', email: ''})
     },
     /*NOTE:POST /register
@@ -53,6 +54,12 @@ module.exports = {
     // Get Login
     getLogin(req, res,next) {
         if(req.isAuthenticated()) return res.redirect('/')
+        /**
+         * NOTE: ログインしていないuserが特定の投稿ページからレビューを作成しよう
+         * としたときログインをもとめられるが、<a href="/login?returnTo=true">レビューを作成する</a>
+         * このアンカータグからログインページに遷移した後,ログインすれば元の投稿ページに戻れる
+         */
+        if(req.query.returnTo) req.session.redirectTo = req.headers.referer;
         res.render('login', {title: 'login'})
     },
     /*NOTE:Post Login

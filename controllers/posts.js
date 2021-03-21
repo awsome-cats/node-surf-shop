@@ -96,7 +96,7 @@ module.exports = {
     },
 
     // Post edit
-    async postEdit (req, res) {
+    postEdit (req, res) {
         // res.send('Edit /posts/:id/edit')
     //    let post = await Post.findById(req.params.id)
        res.render('posts/edit')
@@ -180,7 +180,8 @@ module.exports = {
        post.properties.description = `<strong><a href="/posts/${post._id}">${post.title}</a></strong><p>${post.location}</p><p>${post.description.substring(0, 20)}...</p>`;
 
        //  save the updated post into the db
-       post.save();
+       await post.save();
+
         // redirect to show page
 
        res.redirect(`/posts/${post.id}`);

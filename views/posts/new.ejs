@@ -8,7 +8,7 @@
     -->
     <form action="/posts" method="POST" enctype="multipart/form-data">
         <div><input type="text" name="post[title]" placeholder="タイトル"></div>
-        <div><input type="text" name="post[price]" placeholder="金額"></div>
+        <div><input type="number" name="post[price]" step=".01" placeholder="金額"></div>
         <div>
             <input type="file" accept="images/*" name="images" multiple />
         </div>

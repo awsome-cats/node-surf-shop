@@ -11,7 +11,7 @@
         <h1>投稿の編集</h1>
         <form action="/posts/<%= post.id%>?_method=PUT" method="POST" id="postEditForm" enctype="multipart/form-data">
             <div><input type="text" name="post[title]" placeholder="タイトル" value="<%=post.title  %>"></div>
-            <div><input type="text" name="post[price]" placeholder="金額" value="<%=post.price  %>"></div>
+            <div><input type="number" name="post[price]" placeholder="金額" step=".01" value="<%=post.price  %>"></div>
             <div>
                 <!-- 送信するときの画像選択 -->
                 <input type="file" id="imageUpload" accept="images/*" name="images" multiple />

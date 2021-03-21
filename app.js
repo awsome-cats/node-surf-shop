@@ -5,10 +5,9 @@ const engine        = require('ejs-mate');
 const path          = require('path');
 const logger        = require('morgan')
 const cookieParser  = require('cookie-parser');
-const bodyParser    = require('body-parser')
 const passport      = require('passport')
 const session       = require('express-session')
-const favicon       = require('serve-favicon')
+// const favicon       = require('serve-favicon')
 // Mongoose DB
 const mongoose      = require('mongoose')
 const methodOverride = require('method-override')
@@ -53,8 +52,8 @@ app.set('view engine', 'ejs');
 // Middleware Start
 app.use(express.static('public'));
 app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 // method Override

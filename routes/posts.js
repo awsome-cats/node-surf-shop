@@ -66,7 +66,7 @@ router.get('/:id', asyncErrorHandler(postShow))
  * formに投稿したデータを表示
  * 3000/posts/:id/edit
  */
-router.get('/:id/edit', isLoggedIn,asyncErrorHandler(isAuthor), asyncErrorHandler(postEdit))
+router.get('/:id/edit', isLoggedIn,asyncErrorHandler(isAuthor), postEdit)
 
 /**
  *  PUT update

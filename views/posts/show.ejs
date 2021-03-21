@@ -32,42 +32,45 @@
             投稿者以外はアクセスできない
         -->
         <% if(currentUser && post.author.equals(currentUser._id)){ %>
-        <div>
-            <a href="/posts/<%= post.id %>/edit">
-            <button>編集する</button></a>
-        </div>
+            <div>
+                <a href="/posts/<%= post.id %>/edit">
+                <button>編集する</button></a>
+            </div>
 
-        <!-- NOTE: 削除FORM -->
-        <div>
-            <form action="/posts/<%= post.id %>?_method=DELETE" method="POST">
-            <input type="submit" value="削除">
-            </form>
-        </div>
+            <!-- NOTE: 削除FORM -->
+            <div>
+                <form action="/posts/<%= post.id %>?_method=DELETE" method="POST">
+                <input type="submit" value="削除">
+                </form>
+            </div>
         <%}%>
 
         <!-- NOTE: ReviewFORM スターモジュール -->
-
-        <h2>レビューをする</h2>
-        <form action="/posts/<%= post.id %>/reviews" method="POST">
-            <textarea name="review[body]"></textarea>
-            <fieldset class="starability-basic">
-                <legend>rating:</legend>
-                <button class="clear-rating" type="button">評価をゼロにする</button>
-                <input type="radio" id="rate0" class="input-no-rate" name="review[rating]" value="0" checked aria-label="No rating." />
-                <input type="radio" id="rate1" name="review[rating]" value="1" />
-                <label for="rate1" title="Terrible">1 star</label>
-                <input type="radio" id="rate2" name="review[rating]" value="2" />
-                <label for="rate2" title="Not good">2 stars</label>
-                <input type="radio" id="rate3" name="review[rating]" value="3" />
-                <label for="rate3" title="Average">3 stars</label>
-                <input type="radio" id="rate4" name="review[rating]" value="4" />
-                <label for="rate4" title="Very good">4 stars</label>
-                <input type="radio" id="rate5" name="review[rating]" value="5" />
-                <label for="rate5" title="Amazing">5 stars</label>
-              </fieldset>
-            <!-- <input type="number" min="1" max="5" step="1" required name="review[rating]"/> -->
-            <input type="submit">
-        </form>
+        <% if(currentUser) { %>
+            <h2>レビューをする</h2>
+            <form action="/posts/<%= post.id %>/reviews" method="POST">
+                <textarea name="review[body]"></textarea>
+                <fieldset class="starability-basic">
+                    <legend>rating:</legend>
+                    <button class="clear-rating" type="button">評価をゼロにする</button>
+                    <input type="radio" id="rate0" class="input-no-rate" name="review[rating]" value="0" checked aria-label="No rating." />
+                    <input type="radio" id="rate1" name="review[rating]" value="1" />
+                    <label for="rate1" title="Terrible">1 star</label>
+                    <input type="radio" id="rate2" name="review[rating]" value="2" />
+                    <label for="rate2" title="Not good">2 stars</label>
+                    <input type="radio" id="rate3" name="review[rating]" value="3" />
+                    <label for="rate3" title="Average">3 stars</label>
+                    <input type="radio" id="rate4" name="review[rating]" value="4" />
+                    <label for="rate4" title="Very good">4 stars</label>
+                    <input type="radio" id="rate5" name="review[rating]" value="5" />
+                    <label for="rate5" title="Amazing">5 stars</label>
+                </fieldset>
+                <!-- <input type="number" min="1" max="5" step="1" required name="review[rating]"/> -->
+                <input type="submit">
+            </form>
+        <% } else { %>
+            <h2><a href="/login?returnTo=true">レビューを作成する</a></h2>
+        <% } %>
         <h3>レビュー</h3>
         <!--- NOTE: レビューの表示  --->
         <% post.reviews.forEach(function(review){ %>
@@ -77,7 +80,7 @@
                 評価: <%= review.rating %>
             </div>
             <!-- NOTE: 条件分岐 -->
-            <% if (review.author.equals(currentUser._id)) {%>
+            <% if (currentUser && review.author.equals(currentUser._id)) {%>
             <div>
                 <button class="toggle-edit-form">編集する</button>
                 <form action="/posts/<%= post.id%>/reviews/<%= review.id%>?_method=PUT" method="POST" class="edit-review-form">
