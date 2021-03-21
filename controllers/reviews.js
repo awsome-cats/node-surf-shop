@@ -1,8 +1,6 @@
 const Post = require('../models/post')
 const Review = require('../models/review')
 
-
-
 module.exports = {
 
     // Reviews Create
@@ -43,15 +41,15 @@ module.exports = {
         res.redirect(`/posts/${post.id}`);
 
     },
-    isReviewAuthor: async(req, res, next) => {
-        let review = await Review.findById(req.params.review_id);
-        //equals mongoose methods: オブジェクト同士を照合する
-        if(review.author.equals(req.user._id)) {
-            return next();
-        }
-        req.session.error = "バイバイ"
-        return res.redirect('/')
-    },
+    // isReviewAuthor: async(req, res, next) => {
+    //     let review = await Review.findById(req.params.review_id);
+    //     //equals mongoose methods: オブジェクト同士を照合する
+    //     if(review.author.equals(req.user._id)) {
+    //         return next();
+    //     }
+    //     req.session.error = "バイバイ"
+    //     return res.redirect('/')
+    // },
     // Reviews Update
     async reviewUpdate(req, res, next) {
         await Review.findByIdAndUpdate(req.params.review_id, req.body.review);

@@ -1,14 +1,12 @@
 const express             = require('express')
 // ネストされたparamsにアクセス
 const router              = express.Router({ mergeParams: true}) // paramsのidにアクセスできる
-const {asyncErrorHandler} = require('../middleware')
+const {asyncErrorHandler, isReviewAuthor} = require('../middleware')
 
 const {
     reviewCreate,
-    isReviewAuthor,
     reviewUpdate,
     reviewDestroy
-
 } = require('../controllers/reviews')
 
 
