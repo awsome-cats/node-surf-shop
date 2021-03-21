@@ -1,45 +1,49 @@
 
     <% layout('layouts/post-show-layout') -%>
-        <div>
-            <!-- NOTE: POST 出力 -->
-            <p>タイトル:<%= post.title %></p>
-            <p>金額: <%= post.price%></p>
-            <p>内容: <%= post.description%></p>
-            <p>場所: <%= post.location%></p>
-            <!-- NOTE: Reviewがあれば、出力  -->
-            <p>
-                <% for (let i=0; i < 5;i++){%>
-                    <% if(i < floorRating) { %>
-                        <i class="fas fa-star"></i>
-                    <%} else if((post.avgRating - i) > 0 && (post.avgRating - i) < 1) { %>
-                        <!--- display a half start--->
-                        <i class="fas fa-star-half-alt"></i>
-                    <% } else { %>
-                        <i class="far fa-star"></i>
-                    <% } %>
+        <!-- NOTE: POST 出力 -->
+        <p>投稿者: <%= post.author%></p>
+        <p>タイトル:<%= post.title %></p>
+        <p>金額: <%= post.price%></p>
+        <p>内容: <%= post.description%></p>
+        <p>場所: <%= post.location%></p>
+        <!-- NOTE: Reviewがあれば、出力  -->
+        <p>
+            <% for (let i=0; i < 5;i++){%>
+                <% if(i < floorRating) { %>
+                    <i class="fas fa-star"></i>
+                <%} else if((post.avgRating - i) > 0 && (post.avgRating - i) < 1) { %>
+                    <!--- display a half start--->
+                    <i class="fas fa-star-half-alt"></i>
+                <% } else { %>
+                    <i class="far fa-star"></i>
                 <% } %>
-                <%= `${post.avgRating} star${post.avgRating === 1? '': 's'}`%>
-            </p>
-            <div>
-                <%  post.images.forEach(function(image){ console.log('image', image)%>
-                    <img src="<%= image.path %>" alt="プログラミング画像" width="200px
-                    ">
-                <% }); %>
-            </div>
-            <!-- NOTE: Map出力 -->
-            <div id='map'></div>
-            <!-- NOTE: ページ遷移 -->
-            <div>
-                <a href="/posts/<%= post.id %>/edit">
-                <button>編集する</button></a>
-            </div>
+            <% } %>
+            <%= `${post.avgRating} star${post.avgRating === 1? '': 's'}`%>
+        </p>
+        <div>
+            <%  post.images.forEach(function(image){ %>
+                <img src="<%= image.path %>" alt="プログラミング画像" width="200px
+                ">
+            <% }); %>
         </div>
+        <!-- NOTE: Map出力 -->
+        <div id='map'></div>
+        <!-- NOTE: Click:posts/:id/edit ページ遷移
+            投稿者以外はアクセスできない
+        -->
+        <% if(currentUser && post.author.equals(currentUser._id)){ %>
+        <div>
+            <a href="/posts/<%= post.id %>/edit">
+            <button>編集する</button></a>
+        </div>
+
         <!-- NOTE: 削除FORM -->
         <div>
             <form action="/posts/<%= post.id %>?_method=DELETE" method="POST">
             <input type="submit" value="削除">
             </form>
         </div>
+        <%}%>
 
         <!-- NOTE: ReviewFORM スターモジュール -->
 

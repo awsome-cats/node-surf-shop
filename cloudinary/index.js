@@ -8,7 +8,7 @@ cloudinary.config({
     api_secret: process.env.CLOUD_SECRET
 });
 
-const {CloudinaryStorage} = require('multer-storage-cloudinary');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
@@ -18,7 +18,7 @@ const storage = new CloudinaryStorage({
     buf = buf.toString('hex')
     let uniqFileName = file.originalname.replace(/\.jpeg|\.jpg|\.png/ig, '');
     uniqFileName+=buf;
-    console.log(uniqFileName)
+    // console.log(uniqFileName)
     return {
       folder: 'surf-shop',
       format:'jpeg',

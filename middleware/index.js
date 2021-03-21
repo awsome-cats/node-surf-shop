@@ -1,5 +1,6 @@
 // const Review = require('../models/review')
 // const User = require('../models/user');
+const Post = require('../models/post');
 module.exports = {
     asyncErrorHandler: (fn) => (req, res, next)=> {
             Promise.resolve(fn(req, res, next))
@@ -13,17 +14,34 @@ module.exports = {
     //     }
     //     next()
     // }
+    /**
+     *NOTE: isLoggedIn
+     userがログインしているかどうかcheck
+     */
     isLoggedIn: (req, res, next) => {
         if (req.isAuthenticated()) {
             return next()
         }
-        console.log('res', res.locals) // check ログインしていない場合のuser
-        console.log('isLoggedIn', req.session)
+        // console.log('res', res.locals) // check ログインしていない場合のuser
+        // console.log('isLoggedIn', req.session)
 
         // sessionにerrorがはいっていない
         req.session.error = 'ログインしてください'
         req.session.redirectTo = req.originalUrl
         res.redirect('/login')
+    },
+    /**NOTE:
+     *ログインしているuserが投稿者であるかcheck
+     このチェックがとおれば投稿の編集、削除,更新ができる　
+     */
+    isAuthor: async (req, res, next) => {
+        const post = await Post.findById(req.params.id)
+        if (post.author.equals(req.user._id)) {
+            res.locals.post = post;
+            return next()
+        }
+        req.session.error = 'アクセスできません'
+        res.redirect('back')
     }
 
     /**

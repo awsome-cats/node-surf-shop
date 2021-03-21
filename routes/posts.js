@@ -14,7 +14,7 @@ const {storage, cloudinay }= require('../cloudinary')
 const upload = multer({ storage })
 
 
-const { asyncErrorHandler, isLoggedIn } = require('../middleware')
+const { asyncErrorHandler, isLoggedIn, isAuthor } = require('../middleware')
 const {
     postIndex,
     postNew,
@@ -66,21 +66,21 @@ router.get('/:id', asyncErrorHandler(postShow))
  * formに投稿したデータを表示
  * 3000/posts/:id/edit
  */
-router.get('/:id/edit', asyncErrorHandler(postEdit))
+router.get('/:id/edit', isLoggedIn,asyncErrorHandler(isAuthor), asyncErrorHandler(postEdit))
 
 /**
  *  PUT update
  * formに投稿したデータの更新
  * 3000/posts/:id
  */
-router.put('/:id', upload.array('images', 4), asyncErrorHandler(postUpdate))
+router.put('/:id', isLoggedIn, asyncErrorHandler(isAuthor), upload.array('images', 4), asyncErrorHandler(postUpdate))
 
 /**
  *  DELETE destroy
  * デリート
  * 3000/posts/:id
  */
-router.delete('/:id', asyncErrorHandler(postDestroy))
+router.delete('/:id', isLoggedIn, asyncErrorHandler(isAuthor), asyncErrorHandler(postDestroy))
 
 
 module.exports = router;

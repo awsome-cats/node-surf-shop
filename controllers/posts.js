@@ -34,7 +34,7 @@ module.exports = {
 
     // Posts New
     // posts/new.ejs
-    // detabaseで投稿をさがすようなことはしないので非同期ではない
+    // DBで投稿をさがすようなことはしないので非同期ではない
     postNew(req, res, next) {
         res.render('posts/new')
     },
@@ -43,13 +43,11 @@ module.exports = {
         // req.bodyが必要
         // postに代入した変数からidを取得し、リダイレクト
         req.body.post.images = []
-        console.log('req', req.body)
         for(const file of req.files) {
             req.body.post.images.push({
                 path: file.path,
                 filename: file.filename
             })
-            console.log('req-image', req.body.post.images)
         }
 
         /**
@@ -66,8 +64,10 @@ module.exports = {
         // NOTE: 投稿された場所がmap boxの位置とおなじだと割り当てる必要がある
         req.body.post.geometry = response.body.features[0].geometry;
 
+        req.body.post.author = req.user._id
+
         // let post = await Post.create(req.body.post)
-        // NOTE: 上記のPost.createから変更しました あまりなじみのない方法です
+        // NOTE: 上記のPost.createから変更しました あまりなじみのない方法ですがところどころでつかってます
         let post = new Post(req.body.post);
 		post.properties.description = `<strong><a href="/posts/${post._id}">${post.title}</a></strong><p>${post.location}</p><p>${post.description.substring(0, 20)}...</p>`;
 
@@ -89,7 +89,6 @@ module.exports = {
                     model: 'User'
                 }
             });
-            console.log('post', post)
             //section 12
             const floorRating = post.calculateAvgRating();
             let mapBoxToken = process.env.MAP_BOX_TOKEN
@@ -99,18 +98,13 @@ module.exports = {
     // Post edit
     async postEdit (req, res) {
         // res.send('Edit /posts/:id/edit')
-       let post = await Post.findById(req.params.id)
-       console.log('edit', post)
-       res.render('posts/edit', { post })
+    //    let post = await Post.findById(req.params.id)
+       res.render('posts/edit')
     },
 
     // Update post
     // new:trueをわたす必要
     /**
-     *
-     * @param {*} req
-     * @param {*} res
-     * @param {*} next
      *  存在する 画像の削除を扱う
      * 新規投稿の画像を扱う
      * * find the post by id
@@ -127,16 +121,16 @@ module.exports = {
         * redirect to show page
      */
     async postUpdate(req, res, next) {
-        // find the post by id
-       let post = await Post.findById(req.params.id)
-    //    console.log('postUpdate: postの中身', post)
+        // find the post by idとしていたがisAuthorですでに取得して
+        // res.localsとして扱える
+        // let post = await Post.findById(req.params.id)
+        // console.log('postUpdate: postの中身', post)
        // 画像削除のプロセス
        // check if there's any images for deletion
-       console.log('edit', post )
+       const { post } = res.locals
        if (req.body.deleteImages && req.body.deleteImages.length) {
            // 変数に割り当てる
            let deleteImages = req.body.deleteImages;
-           console.log('deleteImages', deleteImages)
            //loop over deleteImages
            for(const filename of deleteImages) {
                 // delete images from cloudinary
@@ -193,13 +187,14 @@ module.exports = {
     },
     // POST DELETE
     async postDestroy(req, res, next) {
-        let post = await Post.findById(req.params.id)
+        // let post = await Post.findById(req.params.id)
+        const { post } = res.locals
         for (const image of post.images) {
             // console.log('postDestroy', image)
             await cloudinary.uploader.destroy(image.filename);
         }
         await post.remove();
-
+        req.session.success = '投稿は削除されました'
         res.redirect('/posts');
     }
 }

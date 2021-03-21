@@ -22,7 +22,7 @@ const index   = require('./routes/index');
 const posts   = require('./routes/posts');
 const reviews = require('./routes/reviews');
 
-const  app    = express();
+const app    = express();
 
 // Start DB connection
 /**
@@ -49,9 +49,9 @@ db.once('open', () => {
 app.engine('ejs', engine);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
-app.use(express.static('public'));
-// Middleware Start
 
+// Middleware Start
+app.use(express.static('public'));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -103,6 +103,9 @@ app.use(function(req,res, next) {
   //   "_id" :"1",
   //   "username" : "jjj"
   // }
+  /**
+   * NOTE: Loginするとreq.userに値が入る 無いときはundefined
+   */
   res.locals.currentUser = req.user;
   // console.log('req.user', req.user)
   // console.log('currentUser', res.locals.currentUser)

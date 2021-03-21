@@ -19,6 +19,10 @@ module.exports = {
       emailのみでも同じものがある場合も登録不可
       emailをチェックするためにつかったコード
        // eval(require('locus'))
+       NOTE:登録した後loginさせない方法として.req.loginを使わない方法
+       const user = await User.register(new User(req.body),  req.body.password)
+            req.session.success = `登録されました, ${user.username}`
+            res.redirect('/login')
     */
     async postRegister(req, res, next) {
         // const newUser = new User({
@@ -28,10 +32,12 @@ module.exports = {
         // });
 
         try {
-            const  user = await User.register(new User(req.body),  req.body.password)
-            console.log('user', user)
+            const user = await User.register(new User(req.body),  req.body.password)
             req.login(user, function(err) {
-                if (err) return next(err);
+                if (err) {
+                    console.log('req.login-err', err.message)
+                    return next(err)
+                }
                 req.session.success = `Welcome to Map Search, ${user.username}`
                 res.redirect('/')
             })
@@ -39,25 +45,24 @@ module.exports = {
             const { username, email } = req.body
             let error = err.message;
             if(error.includes('duplicate') && error.includes('index: email_1 dup key')) {
-                error =  'このEメールはすでにしようされています。'
+                error =  'このEメールはすでに使用されています。'
             }
             res.render('register', {title: 'Register', username, email, error})
         }
-
-
-
-        res.redirect('/')
     },
     // Get Login
     getLogin(req, res,next) {
+        if(req.isAuthenticated()) return res.redirect('/')
         res.render('login', {title: 'login'})
     },
     /*NOTE:Post Login
     高階関数()(username, password)の部分がムズイ
     */
     async postLogin(req, res, next) {
+        // console.log('req.body', req.body)
        const { username, password } = req.body
        const { user, error } = await User.authenticate()(username, password)
+    //    console.log('user', user)
        if (!user && error) return next(error)
        req.login(user, function(err) {
            if(err) return next(err);
