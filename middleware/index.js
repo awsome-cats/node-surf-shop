@@ -1,11 +1,11 @@
 // const Review = require('../models/review')
-// const User = require('../models/user');
+const User = require('../models/user');
 const Post = require('../models/post');
 module.exports = {
     asyncErrorHandler: (fn) => (req, res, next)=> {
             Promise.resolve(fn(req, res, next))
             .catch(next)
-        },
+    },
     // checkIfUserExists: async (req,res, next) => {
     //     let userExists = await User.findOne({'email': req.body.email})
     //     if(userExists) {
@@ -21,7 +21,7 @@ module.exports = {
     isLoggedIn: (req, res, next) => {
         if (req.isAuthenticated()) {
             return next()
-        }
+    }
         // console.log('res', res.locals) // check ログインしていない場合のuser
         // console.log('isLoggedIn', req.session)
 
@@ -42,7 +42,7 @@ module.exports = {
         }
         req.session.error = 'アクセスできません'
         res.redirect('back')
-    }
+    },
 
     /**
      * NOTE:req.sessionの中身
@@ -61,5 +61,38 @@ module.exports = {
         //     req.session.error = "バイバイ"
         //     return res.redirect('/')
         // },
+    /**パスワードの変更
+     * NOTE: 送信されたデータはuserがログインしているときだからusernameをつかって認証をかける
+     */
+    isValidPassword: async (req ,res, next) =>{
+        const { user } = await User.authenticate()(req.user.username, req.body.currentPassword);
+        if(user) {
+            // add user to res.locals
+            res.locals.user = user;
+            next();
+        } else {
+            req.session.error = 'パスワードが正しくありません'
+            return res.redirect('/profile');
+        }
+    },
+    changePassword: async (req, res, next) => {
+        const {
+            newPassword,
+            confirmationPassword
+        } = req.body;
+
+        if (newPassword && confirmationPassword) {
+            const { user } = res.locals;
+            if (newPassword === confirmationPassword) {
+                await user.setPassword(newPassword);
+                next()
+            } else {
+                req.session.error = '新しいパスワードが一致しません'
+                return res.redirect('/profile');
+            }
+        } else {
+            next()
+        }
+    }
 
 }

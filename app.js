@@ -1,4 +1,4 @@
-require('dotenv').config()
+require('dotenv').config({ path: './bin/config/.env'})
 const createError   = require('http-errors');
 const express       = require('express');
 const engine        = require('ejs-mate');
@@ -20,6 +20,8 @@ const User          = require('./models/user')
 const index   = require('./routes/index');
 const posts   = require('./routes/posts');
 const reviews = require('./routes/reviews');
+/**TEST: */
+const users = require('./routes/users');
 
 const app    = express();
 
@@ -32,14 +34,14 @@ mongoose.connect('mongodb://localhost:27017/surf-shop', {
   useNewUrlParser: true, useUnifiedTopology: true
 }, () => console.log('Connected DB!!'))
 
-
+// End DB connection
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'))
 db.once('open', () => {
   console.log('mongoose connection !!Connected DB !!　')
 })
 
-// End DB connection
+
 
 // use engine setup
 /**
@@ -59,18 +61,21 @@ app.use(express.static(path.join(__dirname, 'public')));
 // method Override
 app.use(methodOverride('_method'));
 
+
+
+
+
 // express-session
 /**
  * [位置]passportを設定する前にsessionを開始する
  * sessionとは、サーバー側でクライアントの状態を管理する方法
  */
+
 app.use(session({
   secret: 'marunoko',
   resave: false,
   saveUninitialized: true
 }))
-
-
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -94,6 +99,13 @@ passport.deserializeUser(User.deserializeUser())
   error: ''
 }
  */
+
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+  console.log('req', req.requestTime)
+  next();
+})
+
 app.use(function(req,res, next) {
   // trick loginUser
   // req.user = {
@@ -105,6 +117,7 @@ app.use(function(req,res, next) {
   /**
    * NOTE: Loginするとreq.userに値が入る 無いときはundefined
    */
+
   res.locals.currentUser = req.user;
   // console.log('req.user', req.user)
   // console.log('currentUser', res.locals.currentUser)
@@ -128,6 +141,8 @@ app.use(function(req,res, next) {
 app.use('/', index);
 app.use('/posts', posts);
 app.use('/posts/:id/reviews', reviews);
+/**TEST: */
+app.use('/api/v1', users);
 
 
 
@@ -140,12 +155,9 @@ app.use(function(req, res, next) {
 
 // error handler
 app.use(function(err, req, res, next) {
-
     console.log('middleware:err', err);
     req.session.error = err.message;
     res.redirect('back');
-
-
 });
 
 
