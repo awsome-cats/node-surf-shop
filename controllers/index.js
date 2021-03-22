@@ -2,16 +2,15 @@ const User = require('../models/user')
 const Post = require('../models/post')
 // const passport = require('passport')
 const mapBoxToken = process.env.MAP_BOX_TOKEN
-
+const util = require('util');
 // error Handlerを使用
-module.exports = {
     //Get /
-    async landingPage(req,res, next) {
+    exports.landingPage = async (req,res, next) =>{
         const posts = await Post.find({})
         res.render('index', { posts, mapBoxToken, title:'Search By Map - Home' })
     },
     //GET /register
-    getRegister(req, res,next) {
+    exports.getRegister = (req, res,next) => {
         if(req.isAuthenticated()) return res.redirect('/')
         res.render('register', {title: 'Register', username: '', email: ''})
     },
@@ -25,7 +24,7 @@ module.exports = {
             req.session.success = `登録されました, ${user.username}`
             res.redirect('/login')
     */
-    async postRegister(req, res, next) {
+    exports.postRegister = async (req, res, next) => {
         // const newUser = new User({
         //     username: req.body.username,
         //     email: req.body.email,
@@ -52,7 +51,7 @@ module.exports = {
         }
     },
     // Get Login
-    getLogin(req, res,next) {
+    exports.getLogin = (req, res,next) => {
         if(req.isAuthenticated()) return res.redirect('/')
         /**
          * NOTE: ログインしていないuserが特定の投稿ページからレビューを作成しよう
@@ -65,7 +64,7 @@ module.exports = {
     /*NOTE:Post Login
     高階関数()(username, password)の部分がムズイ
     */
-    async postLogin(req, res, next) {
+    exports.postLogin = async (req, res, next) => {
         // console.log('req.body', req.body)
        const { username, password } = req.body
        const { user, error } = await User.authenticate()(username, password)
@@ -80,15 +79,32 @@ module.exports = {
        })
     },
     // GET Logout
-    getLogout (req, res, next) {
+    exports.getLogout = (req, res, next) => {
         req.logout()
         res.redirect('/')
     },
-    async getProfile(req,res, next) {
+    exports.getProfile = async(req,res, next) => {
         const posts = await Post.find().where('author').equals(req.user._id).limit(10).exec();
         res.render('profile', {posts})
+    },
+    exports.updateProfile = async(req, res, next) => {
+        const {
+            username,
+            email
+        } = req.body;
+        const { user } = res.locals;
+        if (username) user.username = username;
+        if (email) user.email = email;
+        await user.save();
+        /**
+         * NOTE:util.promisify()引数にわたされた関数を簡単にプロミスオブジェクトにできる
+         */
+        const login = util.promisify(req.login.bind(req))
+        await login(user);
+        req.session.success = 'プロフィールが更新されました'
+        res.redirect('/profile');
     }
-}
+
 
 // second test
 

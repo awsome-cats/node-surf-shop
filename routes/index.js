@@ -7,25 +7,37 @@ const {
   getLogin,
   postLogin,
   getLogout,
-  getProfile
+  getProfile,
+  updateProfile
 } = require('../controllers')
 
-const { asyncErrorHandler, isLoggedIn } = require('../middleware')
+const {
+  asyncErrorHandler,
+  isLoggedIn,
+  isValidPassword,
+  changePassword
+} = require('../middleware')
 
 /* GET home/landing page. */
-router.get('/', asyncErrorHandler(landingPage));
+router.get('/',
+	asyncErrorHandler(landingPage)
+);
 
 /* GET /register. */
 router.get('/register', getRegister)
 
 /* POST /register. */
- router.post('/register',asyncErrorHandler(postRegister));
+ router.post('/register',
+ 	asyncErrorHandler(postRegister)
+);
 
  /* GET /register. */
 router.get('/login', getLogin);
 
 /* GET /register. */
-router.post('/login',asyncErrorHandler(postLogin));
+router.post('/login',
+	asyncErrorHandler(postLogin)
+);
 
 /* GET /logout */
 router.get('/logout',getLogout)
@@ -33,29 +45,33 @@ router.get('/logout',getLogout)
 
 
 
-router.get('/profile', isLoggedIn, asyncErrorHandler(getProfile))
+router.get('/profile', isLoggedIn,
+    asyncErrorHandler(getProfile)
+)
 
 
 
-router.put('/profile/:user_id', (req, res) => {
-  res.send('POST /profile')
-})
+router.put('/profile', isLoggedIn,
+    asyncErrorHandler(isValidPassword),
+    asyncErrorHandler(changePassword),
+    asyncErrorHandler(updateProfile)
+)
 
 
 router.get('/forgot-pw', (req, res) => {
-  res.send('GET /forgot-password')
+  	res.send('GET /forgot-password')
 })
 
 router.put('/forgot-pw', (req, res) => {
-  res.send('PUT /forgot-password')
+  	res.send('PUT /forgot-password')
 })
 
 router.get('/reset-pw/:token', (req, res) => {
-  res.send('GET /rest-pw/:token')
+  	res.send('GET /rest-pw/:token')
 })
 
 router.put('/reset-pw/:token', (req, res) => {
-  res.send('PUT /rest-pw/:token')
+  	res.send('PUT /rest-pw/:token')
 })
 // router.delete('/profile/:user_id', (req, res) => {
 //   res.send('POST /profile')

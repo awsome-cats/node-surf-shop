@@ -14,7 +14,7 @@ const {storage, cloudinay }= require('../cloudinary')
 const upload = multer({ storage })
 
 
-const { asyncErrorHandler, isLoggedIn, isAuthor } = require('../middleware')
+const { asyncErrorHandler, isLoggedIn,isAuthor } = require('../middleware')
 const {
     postIndex,
     postNew,
