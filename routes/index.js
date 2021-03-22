@@ -48,17 +48,8 @@ router.get('/profile', isLoggedIn,
     asyncErrorHandler(getProfile)
 )
 
-<<<<<<< HEAD
 /**PUT profile */
-=======
 
-router.get('/profile', isLoggedIn,
-    asyncErrorHandler(getProfile)
-)
-
-
-
->>>>>>> userProfile
 router.put('/profile', isLoggedIn,
     asyncErrorHandler(isValidPassword),
     asyncErrorHandler(changePassword),

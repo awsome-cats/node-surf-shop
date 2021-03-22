@@ -80,9 +80,11 @@ module.exports = {
             newPassword,
             confirmationPassword
         } = req.body;
+        console.log('req.body', req.body)
 
         if (newPassword && confirmationPassword) {
             const { user } = res.locals;
+            console.log('user', user)
             if (newPassword === confirmationPassword) {
                 await user.setPassword(newPassword);
                 next()
