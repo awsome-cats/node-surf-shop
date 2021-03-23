@@ -3,10 +3,12 @@ const createError   = require('http-errors');
 const express       = require('express');
 const engine        = require('ejs-mate');
 const path          = require('path');
-const logger        = require('morgan')
+const morgan        = require('morgan')
 const cookieParser  = require('cookie-parser');
 const passport      = require('passport')
 const session       = require('express-session')
+const AppError      = require('./utils/appError')
+const globalErrorHandler = require('./controllers/errorController')
 // const favicon       = require('serve-favicon')
 // Mongoose DB
 const mongoose      = require('mongoose')
@@ -30,8 +32,12 @@ const app    = express();
  * local mongoDB
  * appインスタンス生成のあと
  */
-mongoose.connect('mongodb://localhost:27017/surf-shop', {
-  useNewUrlParser: true, useUnifiedTopology: true
+
+const DB = process.env.DATABASE_LOCAL
+mongoose.connect(DB, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useCreateIndex: true
 }, () => console.log('Connected DB!!'))
 
 // End DB connection
@@ -41,7 +47,9 @@ db.once('open', () => {
   console.log('mongoose connection !!Connected DB !!　')
 })
 
-
+if(process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+}
 
 // use engine setup
 /**
@@ -53,7 +61,7 @@ app.set('view engine', 'ejs');
 
 // Middleware Start
 app.use(express.static('public'));
-app.use(logger('dev'));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -64,7 +72,7 @@ app.use(methodOverride('_method'));
 
 
 
-
+console.log('enviii', process.env.NODE_ENV)
 // express-session
 /**
  * [位置]passportを設定する前にsessionを開始する
@@ -148,17 +156,14 @@ app.use('/api/v1', users);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
- const err = new Error('お探しのページがみつかりません');
- err.status = 404;
- next(err);
+//  const err = new Error(`お探しの${req.originalUrl}が見つかりません`);
+//  err.status = 'fail';
+//  err.statusCode = 404
+ next(new AppError(`お探しの${req.originalUrl}が見つかりません`, 404));
 });
 
-// error handler
-app.use(function(err, req, res, next) {
-    console.log('middleware:err', err);
-    req.session.error = err.message;
-    res.redirect('back');
-});
+// global error handler
+app.use(globalErrorHandler);
 
 
 module.exports = app;

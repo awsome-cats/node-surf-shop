@@ -1,16 +1,21 @@
 const User = require('../models/user')
 const Post = require('../models/post')
-// const passport = require('passport')
+const AppError = require('../utils/appError')
 const mapBoxToken = process.env.MAP_BOX_TOKEN
 const util = require('util');
+
+
+
+
 // error Handlerを使用
     //Get /
-    exports.landingPage = async (req,res, next) =>{
+module.exports = {
+    async landingPage (req,res, next) {
         const posts = await Post.find({})
         res.render('index', { posts, mapBoxToken, title:'Search By Map - Home' })
     },
     //GET /register
-    exports.getRegister = (req, res,next) => {
+    async getRegister(req, res,next) {
         if(req.isAuthenticated()) return res.redirect('/')
         res.render('register', {title: 'Register', username: '', email: ''})
     },
@@ -24,7 +29,7 @@ const util = require('util');
             req.session.success = `登録されました, ${user.username}`
             res.redirect('/login')
     */
-    exports.postRegister = async (req, res, next) => {
+    async postRegister(req, res, next) {
         // const newUser = new User({
         //     username: req.body.username,
         //     email: req.body.email,
@@ -33,16 +38,21 @@ const util = require('util');
 
         try {
             const user = await User.register(new User(req.body),  req.body.password)
+            if (!user) {
+                return next(new AppError('ユーザー名がすでに存在してます'))
+            }
             req.login(user, function(err) {
                 if (err) {
-                    console.log('req.login-err', err.message)
-                    return next(err)
+                    return next(new AppError('ユーザー名がすでに存在します'))
                 }
                 req.session.success = `Welcome to Map Search, ${user.username}`
                 res.redirect('/')
             })
         }catch(err) {
             const { username, email } = req.body
+            if (username) {
+                return next(new AppError('ユーザー名がすでに存在してます'))
+            }
             let error = err.message;
             if(error.includes('duplicate') && error.includes('index: email_1 dup key')) {
                 error =  'このEメールはすでに使用されています。'
@@ -51,7 +61,7 @@ const util = require('util');
         }
     },
     // Get Login
-    exports.getLogin = (req, res,next) => {
+    async getLogin(req, res,next) {
         if(req.isAuthenticated()) return res.redirect('/')
         /**
          * NOTE: ログインしていないuserが特定の投稿ページからレビューを作成しよう
@@ -64,14 +74,17 @@ const util = require('util');
     /*NOTE:Post Login
     高階関数()(username, password)の部分がムズイ
     */
-    exports.postLogin = async (req, res, next) => {
-        // console.log('req.body', req.body)
+    async postLogin (req, res, next) {
        const { username, password } = req.body
-       const { user, error } = await User.authenticate()(username, password)
+       const { user } = await User.authenticate()(username, password)
+    //    console.log('authenticate error', error)
     //    console.log('user', user)
-       if (!user && error) return next(error)
-       req.login(user, function(err) {
-           if(err) return next(err);
+        // const error = new Error('ユーザーが見つかりません')
+       if (!user) {
+        return next(new AppError('パスワードかユーザー名が違います'))
+       }
+       req.login(user, function(error) {
+           if(error) return next(error);
            req.session.success = `Welcome back ${username}`
            const redirectUrl = req.session.redirectTo || '/';
            delete req.session.redirectTo;
@@ -79,15 +92,15 @@ const util = require('util');
        })
     },
     // GET Logout
-    exports.getLogout = (req, res, next) => {
+    async getLogout(req, res, next) {
         req.logout()
         res.redirect('/')
     },
-    exports.getProfile = async(req,res, next) => {
+    async getProfile(req,res, next) {
         const posts = await Post.find().where('author').equals(req.user._id).limit(10).exec();
         res.render('profile', {posts})
     },
-    exports.updateProfile = async(req, res, next) => {
+    async updateProfile(req, res, next) {
         const {
             username,
             email
@@ -104,12 +117,14 @@ const util = require('util');
         req.session.success = 'プロフィールが更新されました'
         res.redirect('/profile');
     }
+}
+
 
 
 // second test
 
 // module.exports = {
-//     async postRegister(req, res, next) {
+//      postRegister(req, res, next) {
 //         const newUser = new User({
 //             username: req.body.username,
 //             email: req.body.email,

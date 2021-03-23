@@ -35,9 +35,7 @@ router.get('/register', getRegister)
 router.get('/login', getLogin);
 
 /* GET /register. */
-router.post('/login',
-	asyncErrorHandler(postLogin)
-);
+router.post('/login',asyncErrorHandler(postLogin));
 
 /* GET /logout */
 router.get('/logout',getLogout)

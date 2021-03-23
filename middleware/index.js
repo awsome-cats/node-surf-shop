@@ -63,6 +63,7 @@ module.exports = {
         // },
     /**パスワードの変更
      * NOTE: 送信されたデータはuserがログインしているときだからusernameをつかって認証をかける
+     * authenticateはログインの要求をかける(user objectをあつかう)
      */
     isValidPassword: async (req ,res, next) =>{
         const { user } = await User.authenticate()(req.user.username, req.body.currentPassword);
