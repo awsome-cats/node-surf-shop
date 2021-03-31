@@ -3,8 +3,7 @@
 /**
  * Module dependencies.
  */
-const dotenv = require('dotenv')
-dotenv.config({path: './config/.env'})
+
 var app = require('../app');
 var debug = require('debug')('surf-shop:server');
 var http = require('http');
