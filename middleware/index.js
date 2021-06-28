@@ -1,7 +1,9 @@
 // const Review = require('../models/review')
 const User = require('../models/user');
 const Post = require('../models/post');
-module.exports = {
+const { cloudinary } = require('../cloudinary')
+
+const middleware = {
     asyncErrorHandler: (fn) => (req, res, next)=> {
             Promise.resolve(fn(req, res, next))
             .catch(next)
@@ -71,6 +73,7 @@ module.exports = {
             res.locals.user = user;
             next();
         } else {
+            middleware.deleteProfileImage(req)
             req.session.error = 'パスワードが正しくありません'
             return res.redirect('/profile');
         }
@@ -78,21 +81,33 @@ module.exports = {
     changePassword: async (req, res, next) => {
         const {
             newPassword,
-            confirmationPassword
+            passwordConfirmation
         } = req.body;
 
-        if (newPassword && confirmationPassword) {
+        if (newPassword && !passwordConfirmation) {
+            middleware.deleteProfileImage(req)
+            req.session.error = 'missing password confirmation!'
+            return req.redirect('/profile')
+
+        } else if (newPassword && passwordConfirmation){
             const { user } = res.locals;
-            if (newPassword === confirmationPassword) {
+            if (newPassword === passwordConfirmation) {
                 await user.setPassword(newPassword);
                 next()
             } else {
+                middleware.deleteProfileImage(req)
                 req.session.error = '新しいパスワードが一致しません'
                 return res.redirect('/profile');
             }
         } else {
             next()
         }
+    },
+    deleteProfileImage: async (req) => {
+        console.log('deleteProfileImage', req.file)
+        if (req.file) await cloudinary.uploader.destroy(req.file.public_id)
     }
 
 }
+
+module.exports = middleware

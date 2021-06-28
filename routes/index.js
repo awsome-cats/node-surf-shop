@@ -1,5 +1,11 @@
 var express = require('express');
 var router = express.Router();
+const multer = require('multer')
+const { storage } = require('../cloudinary');
+const upload = multer({ storage });
+/**追加するmiddleware
+ * updateProfile, getForgotPw, putForgotPw, getReset, putReset
+ */
 const {
   landingPage,
   getRegister,
@@ -8,7 +14,11 @@ const {
   postLogin,
   getLogout,
   getProfile,
-  updateProfile
+  updateProfile,
+  getForgotPw,
+  putForgotPw,
+  getReset,
+  putReset
 } = require('../controllers')
 
 const {
@@ -26,8 +36,8 @@ router.get('/',
 /* GET /register. */
 router.get('/register', getRegister)
 
-/* POST /register. */
- router.post('/register',
+/* POST /register.  name=image*/
+ router.post('/register', upload.single('image'),
  	asyncErrorHandler(postRegister)
 );
 
@@ -44,35 +54,34 @@ router.get('/logout',getLogout)
 
 
 
-
+/**GET /profile */
 router.get('/profile', isLoggedIn,
     asyncErrorHandler(getProfile)
 )
 
 
-
+/**PUT /profile */
 router.put('/profile', isLoggedIn,
+    upload.single('image'),
     asyncErrorHandler(isValidPassword),
     asyncErrorHandler(changePassword),
     asyncErrorHandler(updateProfile)
 )
 
+// getForgotPw
+router.get('/forgot-password', getForgotPw)
 
-router.get('/forgot-pw', (req, res) => {
-  	res.send('GET /forgot-password')
-})
+// asyncErrorHandler(putForgotPw)
+router.put('/forgot-password', asyncErrorHandler(putForgotPw))
 
-router.put('/forgot-pw', (req, res) => {
-  	res.send('PUT /forgot-password')
-})
 
-router.get('/reset-pw/:token', (req, res) => {
-  	res.send('GET /rest-pw/:token')
-})
+// GET /reset/:token
+// asyncErrorHandler(getRest)
+router.get('/reset/:token',  asyncErrorHandler(getReset))
 
-router.put('/reset-pw/:token', (req, res) => {
-  	res.send('PUT /rest-pw/:token')
-})
+// Put /reset/:token
+// asyncErrorHandler(putRest)
+router.put('/reset/:token', asyncErrorHandler(putReset))
 // router.delete('/profile/:user_id', (req, res) => {
 //   res.send('POST /profile')
 // })

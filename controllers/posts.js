@@ -42,6 +42,7 @@ module.exports = {
     async postCreate(req, res, next) {
         // req.bodyが必要
         // postに代入した変数からidを取得し、リダイレクト
+        console.log('postCreate', req.files)
         req.body.post.images = []
         for(const file of req.files) {
             req.body.post.images.push({
